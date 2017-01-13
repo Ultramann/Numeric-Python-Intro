@@ -37,4 +37,4 @@ As this repository intends simply to introduce NumPy we will be focusing on the 
 
     Try to find the centers of blobs of that already "exist" within a dataset.
 
-In order to stay on the rails and keep chugging towards learning about injecting performance into Python and not detour deep into machine learning algorithms...ville, let's take a look at an implementation of kmeans using only built-in python functions and data types.
+In order to stay on the rails and keep chugging towards learning about injecting performance into Python and not detour deep into machine learning algorithms...ville, let's take a look at an implementation of k-means using only built-in python functions and data types.
