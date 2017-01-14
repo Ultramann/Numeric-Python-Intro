@@ -5,7 +5,8 @@ This repository aims to serve as a tutorial style introduction to discovering nu
 ## Table of Contents:
 1. [Preamble](#preamble)
 2. [NumPy](#numpy)
-    * [Duck Typing vs. Static Typing](#duck_v_static)
+    * [Duck Typing Limitations](#duck_limits)
+    * [Broadcasting](#broadcasting)
 3. [k-means](#kmeans)
     * [Why k-means?](#whyk)
     * [Implementations](#implementations)
@@ -44,13 +45,27 @@ NumPy's front page defines itself as the following:
 
 These are amazing features indeed if we're looking for a library to add some performance to our Python code.
 
-As this repository intends simply to introduce NumPy we will be focusing on the first two bullet points, N-dimensional arrays and broadcasting functions. We should, however, take a moment to talk about some of the intutions for when and why we can expect performance gains from NumPy.
+As this repository intends simply to introduce NumPy we will be focusing on the first two bullet points, N-dimensional arrays and broadcasting functions. We should, however, take a moment to talk about some of the intuitions for when and why we can expect performance gains from NumPy.
 
-<a name="duck_v_static">
-### Duck Typing vs. Static Typing
+<a name="duck_limits">
+### Duck Typing Limitations
 </a>
 
-**Talk about pythons duck typing against numpy's knowing what is in the array. What's all this quack about??**
+So we have some intuition for one of the reasons using NumPy might give us faster code let's discuss type systems for a moment.
+
+Python is colloquially referred to a duck typed language, deriving from that phrase now known as the duck test, "If it looks like a duck, swims like a duck, and quacks like a duck, then it probably is a duck." You might be wondering, how in the world is this saying applicable to programming, aka, what's all this quack about? So let's get into that.
+
+In Python, since it's an interpreted language, when you type the command `4 + 5` it doesn't __*know*__ what 4 and 5 are so it has to go check to see if you can add them together. As it turns out, you can, so Python with return `9`.
+
+This going and checking if you can perform the requested operation in real time is part of what makes Python easy to program in. For example, if you want to do something in a `while` loop until a list, `ex_list`, is empty you could write `while len(ex_list) >= 0`. However, we can use duck typing to our advantage and instead write `while ex_list`. This works because Python knows `while` needs a boolean, so it will silently try to interpret `ex_list` as one; luckily a list only evaluates to `False` when it is empty, which is exactly what we want!
+
+There is, however, a downside to duck typing. It incurs a time penalty, read: it can be slow sometimes. One of those times is when you're looping over numbers, and performing numeric operations on them. Even if you know you have a list only containing numbers, if you want to add 2 to every one of those numbers, you'll need to loop over the list and add 2 to every number; each time though, Python will need to manually check if it can add 2 to that element of the list. :'(
+
+While much of the slowness in the above add 2 to all the elements of a list example can be attributed to duck typing pitfalls, we can see another aspect of the situation that is limiting is the nature of a Python list. Since Python lists are heterogeneous, this manual check for ability to add is actually necessary. Is there a different data structure, then, that could alleviate this pain point? I think you can guess where we're going.
+
+<a name="broadcasting">
+### Broadcasting
+</a>
 
 Before waxing poetic or getting incredibly abstract, bordering esoteric, about NumPy let us introduce an algorithm, k-means, as a medium to observe NumPy's power.
 
@@ -64,7 +79,7 @@ Before waxing poetic or getting incredibly abstract, bordering esoteric, about N
 
 The following image, hopefully in the more intuitive visual way, demonstrates what is meant by "centers" and "blobs".
 
-<div style="text-align: center"><img src="images/example_clustering.png" style="width: 500px"></div>
+<div style="text-align: center"><img src="images/example_clustering.png" style="width: 300px"></div>
 
 **Note:** In practice these "blobs" exist in a space with many more than two dimensions. The above plot is presented solely as a device to gain intuition for what we're trying to accomplish with k-means.
 
@@ -89,7 +104,7 @@ First we're going to to look at an implementation using only built-in python fun
 #### Base Python
 </a>
 
-This k-means implementation lives under the name `base_python` in the `kmeans.py` script. The meat of it however is implemented in two functions: `get_new_assignments` and `calculate_new_centroids`. Let's look at both now.
+This k-means implementation lives under the name `base_python` in the `kmeans.py` script. The meat of it, however, is implemented in two functions: `get_new_assignments` and `calculate_new_centroids`. Let's look at both now.
 
 ##### Getting New Centroid Assignments
 ```python
