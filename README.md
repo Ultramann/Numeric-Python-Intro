@@ -50,7 +50,7 @@ As this repository intends simply to introduce NumPy we will be focusing on the 
 ### Duck Typing vs. Static Typing
 </a>
 
-**Talk about pythons duck typing against numpy's knowing what is in the array.**
+**Talk about pythons duck typing against numpy's knowing what is in the array. What's all this quack about??**
 
 Before waxing poetic or getting incredibly abstract, bordering esoteric, about NumPy let us introduce an algorithm, k-means, as a medium to observe NumPy's power.
 
@@ -58,7 +58,7 @@ Before waxing poetic or getting incredibly abstract, bordering esoteric, about N
 ## k-means
 </a>
 
-[k-means](https://en.wikipedia.org/wiki/K-means_clustering) is an unsupervised machine learning algorithm designed to discover clusters within a dataset. Consider the following, highly math-less description, of k-means (algorithm/math/English junkies, please forgive me):
+[k-means](https://en.wikipedia.org/wiki/K-means_clustering) is an unsupervised machine learning algorithm designed to discover clusters within a dataset. Consider the following, highly math-less description, of k-means; algorithm/math/English junkies, please forgive me.
 
     Try to find the centers of blobs of that already "exist" within a dataset.
 
@@ -66,7 +66,7 @@ The following image, hopefully in the more intuitive visual way, demonstrates wh
 
 ![Example Clustering](images/example_clustering.png)
 
-**Note:** In practice these "blobs" exist in much high dimensions than two. The above plot is presented solely as a devise to gain intuition for what we're trying to accomplish with k-means.
+**Note:** In practice these "blobs" exist in a space with many more than two dimensions. The above plot is presented solely as a device to gain intuition for what we're trying to accomplish with k-means.
 
 <a name="whyk">
 ### Why k-means?
@@ -89,7 +89,7 @@ First we're going to to look at an implementation using only built-in python fun
 #### Base Python
 </a>
 
-This k-means implementation lives under the name `base_python` in the `kmeans.py` script. The meat of it however is implemented in two functions: `get_new_assignments` and `calcualte_new_centroids`. Let's look at both now.
+This k-means implementation lives under the name `base_python` in the `kmeans.py` script. The meat of it however is implemented in two functions: `get_new_assignments` and `calculate_new_centroids`. Let's look at both now.
 
 ##### Getting New Centroid Assignments
 ```python

@@ -35,7 +35,7 @@ def update_centroids(centroids, X):
                           points that are closest to it
     """
     centroid_assignments = get_new_assignments(centroids, X)
-    new_centroids = calcualte_new_centroids(centroid_assignments)
+    new_centroids = calculate_new_centroids(centroid_assignments)
     return new_centroids, centroid_assignments
 
 
@@ -81,7 +81,7 @@ def list_euclidean_dist(a, b):
     return sum((da - db) ** 2 for da, db in zip(a, b)) ** 0.5
 
 
-def calcualte_new_centroids(centroid_assignments):
+def calculate_new_centroids(centroid_assignments):
     """Helper function to find new centroid locations based on new centroid
     assignments.
 
