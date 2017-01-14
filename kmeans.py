@@ -3,7 +3,8 @@ def base_python(X, k):
 
     Parameters
     ----------
-    X : list of lists of numerics, data in length of inner list dimensional space
+    X : list of lists of numerics, data in length of inner list
+        dimensional space
     k : int, number of clusters
 
     Returns
@@ -24,12 +25,14 @@ def update_centroids(centroids, X):
     Parameters
     ----------
     centroids : list of list of numerics, length = k, dimensions same as X
-    X : list of lists of numerics, data in length of inner list dimensional space
+    X         : list of lists of numerics, data in length of inner list
+                dimensional space
     
     Returns
     -------
     centroids : list of list of numerics, length = k, dimensions same as X
     centroid_assignments: list of list of lists, for each centroid the data
+                          points that are closest to it
     """
     centroid_assignments = get_new_assignments(centroids, X)
     new_centroids = calcualte_new_centroids(centroid_assignments)
@@ -42,11 +45,13 @@ def get_new_assignments(centroids, X):
     Parameters
     ----------
     centroids : list of list of numerics, length = k, dimensions same as X
-    X : list of lists of numerics, data in length of inner list dimensional space
+    X         : list of lists of numerics, data in length of inner list
+                dimensional space
     
     Returns
     -------
     centroid_assignments: list of list of lists, for each centroid the data
+                          points that are closest to it
     """
     centroid_assignments = [[] for _ in centroids]
     for x in X:
@@ -83,6 +88,7 @@ def calcualte_new_centroids(centroid_assignments):
     Parameters
     ----------
     centroid_assignments: list of list of lists, for each centroid the data
+                          points that are closest to it
 
     Returns
     -------
