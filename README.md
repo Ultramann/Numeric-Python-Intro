@@ -61,13 +61,41 @@ This going and checking if you can perform the requested operation in real time 
 
 There is, however, a downside to duck typing. It incurs a time penalty, read: it can be slow sometimes. One of those times is when you're looping over numbers, and performing numeric operations on them. Even if you know you have a list only containing numbers, if you want to add 2 to every one of those numbers, you'll need to loop over the list and add 2 to every number; each time though, Python will need to manually check if it can add 2 to that element of the list. :'(
 
-While much of the slowness in the above add 2 to all the elements of a list example can be attributed to duck typing pitfalls, we can see another aspect of the situation that is limiting is the nature of a Python list. Since Python lists are heterogeneous, this manual check for ability to add is actually necessary. Is there a different data structure, then, that could alleviate this pain point? I think you can guess where we're going.
+```python
+>>> [i + 2 for i in [1, 2, 3, 4, 5, 6]]
+[3, 4, 5, 6, 7, 8]
+```
+
+While much of the slowness in the above add 2 to all the elements of a list example can be attributed to duck typing pitfalls, we can see another aspect of the situation that is limiting is the nature of a Python list. Since Python lists are heterogeneous, this manual check for ability to add is actually necessary. Is there a different data structure, then, that could alleviate this pain point? I think you can guess where we're headed.
 
 <a name="broadcasting">
 ### Broadcasting
 </a>
 
-Before waxing poetic or getting incredibly abstract, bordering esoteric, about NumPy let us introduce an algorithm, k-means, as a medium to observe NumPy's power.
+NumPy is going to be our saving grace when it comes to escaping the time expensive processing of duck checking. But how is it going to do that? As we saw above in NumPy's self description, it provides "a powerful N-dimensional array object". By definition, at least in the C programming language which is the language Python and NumPy are written in, an array is an ordered, and therefore, indexable group of variables of the same type. This sounds just like a Python list, until we get to the part of having the same type. Another way to put it is that arrays are homogeneous.
+
+It is this homogeneity that allows NumPy to run much faster that base Python. Consider the following intuitive extension of the above example of adding 2 to all the numbers in a list. If, instead, we use a NumPy array, the array will already know that all of it's elements are numbers, and so it won't need to check if it can add 2 to any of them.
+
+In fact, in many situations, like the add 2 one above, we won't even need to write a loop to perform our operation! "How is possible?", you ask. Through the magic of the second feature of NumPy had listed above, [broadcasting](https://docs.scipy.org/doc/numpy/user/basics.broadcasting.html).
+
+Broadcasting, also known as vectorization, provides a way to express operations over an entire array instead of having a manually loop over every individual element. Lets take a look a what this looks like with our add 2 example a picture then in code.
+
+<div style="text-align: center"><img src="images/broadcasting.png" style="width: 600px"></div>
+
+Basically all NumPy does when you try to add a single number to an array is infer that you want to add it to every element of the array. The really cool thing this that NumPy doesn't actually make an array full of 2's. Instead it actually performs the exact same loop we saw above, but it does it in C instead of Python.
+
+We can see an equivalence of these two interpretations in the following code block. Note, the first one is actually faster because we don't have to move between copies of 2.
+
+```python
+>>> np.array([1, 2, 3, 4, 5, 6]) + 2
+array([3, 4, 5, 6, 7, 8])
+>>> np.array([1, 2, 3, 4, 5, 6]) + np.array([2, 2, 2, 2, 2, 2])
+array([3, 4, 5, 6, 7, 8])
+```
+
+One final thing to note about broadcasting is that many of NumPy's functions, not just built-in operations can be broadcasted. We'll be seeing this and broadcasting in higher dimensions later in the tutorial. If you'd like to know more about broadcasting click to above like to NumPy's documentation on broadcasting.
+
+Let us introduce an algorithm, k-means, to serve as a medium for observing a need for NumPy and then its power.
 
 <a name="kmeans">
 ## k-means
