@@ -52,7 +52,7 @@ This k-means implementation lives under the name `base_python` in the `kmeans.py
 def get_new_assignments(centroids, X):
     centroid_assignments = [[] for _ in centroids]
     for x in X:
-        closest_dist = 10000000000000
+        closest_dist = 1e100
         closest_centroid = None
         for centroid_idx, centroid_location in enumerate(centroids):
             current_dist = list_euclidean_dist(centroid_location, x)

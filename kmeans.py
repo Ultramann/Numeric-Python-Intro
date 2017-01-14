@@ -1,4 +1,4 @@
-def base_python(X, k):
+def base_python(X, k, iterations=1000):
     """k-means algorithm implemented fully with only base python.
 
     Parameters
@@ -14,7 +14,7 @@ def base_python(X, k):
                           points that are closest to it
     """
     centroids = X[:k]
-    for _ in range(1000):
+    for _ in range(iterations):
         centroids, centroid_assignments = update_centroids(centroids, X)
     return centroids, centroid_assignments
 
@@ -55,7 +55,7 @@ def get_new_assignments(centroids, X):
     """
     centroid_assignments = [[] for _ in centroids]
     for x in X:
-        closest_dist = 10000000000000
+        closest_dist = 1e100
         closest_centroid = None
         for centroid_idx, centroid_location in enumerate(centroids):
             current_dist = list_euclidean_dist(centroid_location, x)
