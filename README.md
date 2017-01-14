@@ -64,7 +64,7 @@ Before waxing poetic or getting incredibly abstract, bordering esoteric, about N
 
 The following image, hopefully in the more intuitive visual way, demonstrates what is meant by "centers" and "blobs".
 
-![Example Clustering](images/example_clustering.png)
+<div style="text-align: center"><img src="images/example_clustering.png" style="width: 500px"></div>
 
 **Note:** In practice these "blobs" exist in a space with many more than two dimensions. The above plot is presented solely as a device to gain intuition for what we're trying to accomplish with k-means.
 
