@@ -3,7 +3,7 @@ from sklearn.datasets import make_classification
 import matplotlib.pyplot as plt
 
 
-def kmeans(X, k):
+def base_python(X, k):
     centroids = [X[np.random.randint(0, len(X))] for _ in range(k)]
     for _ in range(1000):
         centroids = update_centroids(centroids, X)
@@ -52,5 +52,5 @@ if __name__ == '__main__':
     X, y = make_classification(n_samples=100, n_features=2,
                                n_redundant=0, class_sep=2,
                                n_clusters_per_class=1)
-    centroids = kmeans(X.tolist(), k=2)
+    centroids = base_python(X.tolist(), k=2)
     plot_everything(X, centroids)
