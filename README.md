@@ -9,6 +9,7 @@ This repository aims to serve as a tutorial style introduction to discovering nu
     * [Broadcasting](#broadcasting)
 3. [k-means](#kmeans)
     * [Why k-means?](#whyk)
+    * [Pseudocode](#pseudo)
     * [Implementations](#implementations)
         1. [Base Python](#base_python)
         2. [NumPy Accelerated](#np_accel)
@@ -22,14 +23,14 @@ Python is well known to be an incredible learning language for beginning program
 
 What many people don't know about Python when they unknowingly choose it from a stack of languages based on what programming language the internet suggests a beginner start with is that Python has a vast array (no pun intended) of other amazing features, libraries, and applications; many more in fact than a beginner could even begin to guess.
 
-A short, but far from exhaustive, list of fantastic Python offerings to whet your technical palate:
+A short, but far from exhaustive, list of fantastic Python offerings to whet your technical palate (**Note:** all of these libraries are open source):
 * [Django](https://www.djangoproject.com/) - web development.
 * [Selenium-Python](http://selenium-python.readthedocs.io/) - web browser automation.
 * [SciPy](https://www.scipy.org/) - scientific computing.
 * [Scikit-Learn](http://scikit-learn.org/stable/) - machine learning.
-* [Tensorflow](https://www.tensorflow.org/) - nuff said.
+* [Tensorflow](https://www.tensorflow.org/) - tensor graph computation library from Google, nuff said.
 
-It is through a specific library within the SciPy ecosystem that this repository will introduce programming performant Python. That library is [NumPy](http://www.numpy.org/).
+It is through a specific library within the SciPy ecosystem that this tutorial will introduce programming performant Python. That library is [NumPy](http://www.numpy.org/).
 
 <a name="numpy">
 ## NumPy 
@@ -95,7 +96,7 @@ array([3, 4, 5, 6, 7, 8])
 
 One final thing to note about broadcasting is that many of NumPy's functions, not just built-in operations can be broadcasted. We'll be seeing this and broadcasting in higher dimensions later in the tutorial. If you'd like to know more about broadcasting click to above like to NumPy's documentation on broadcasting.
 
-Let us introduce an algorithm, k-means, to serve as a medium for observing a need for NumPy and then its power.
+That's all of the ex us look at an algorithm, k-means, to serve as a medium for observing a need for NumPy and then its power.
 
 <a name="kmeans">
 ## k-means
@@ -117,12 +118,22 @@ The following image, hopefully in the more intuitive visual way, demonstrates wh
 
 **Talk about why k-means is a good algorithm to choose to demonstrate performant python.**
 
-In order to stay on the rails and keep chugging towards learning about injecting performance into Python and not detour deep into machine learning algorithms...ville, let's move on to implementations of the k-means algorithm.
+In order to stay on the rails and keep chugging towards learning about injecting performance into Python and not detour deep into machine learning algorithms...ville, let's move on to pseudocode and then implementations of the k-means algorithm.
+
+<a name="pseudo">
+### Pseudocode
+</a>
+
+For some context of how k-mean finds the "center" of the "blobs" here's a rough pseudocode outline of the algorithm.
+
+1. Initialize centroids. Aka, choose `k` centroids to start from.
+2. While stopping condition not met:
+    1. Find closest centroid to each point.
+    2. Move centroids to the average of all the points closest to them.
 
 <a name="implementations">
 ### Implementations
 </a>
-
 
 **Note:** The code blocks throughout the remainder of this tutorial will not include doc strings to cut down on unnecessary space usage. In addition, code blocks will be accompanied by descriptions of the code. Also! Doc strings are important! As such, they are obviously included in the actual scripts.
 
@@ -132,7 +143,7 @@ First we're going to to look at an implementation using only built-in python fun
 #### Base Python
 </a>
 
-This k-means implementation lives under the name `base_python` in the `kmeans.py` script. The meat of it, however, is implemented in two functions: `get_new_assignments` and `calculate_new_centroids`. Let's look at both now.
+This k-means implementation lives under the name `base_python` in the `kmeans.py` script in the `src` directory. The meat of it, however, is implemented in two functions: `get_new_assignments` and `calculate_new_centroids` corresponding to steps 2.1 and 2.2, respectively, from above. Let's look at both now.
 
 ##### Getting New Centroid Assignments
 ```python
