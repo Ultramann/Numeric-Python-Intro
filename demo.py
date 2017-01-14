@@ -1,21 +1,28 @@
-import kmeans
 import numpy as np
-from sklearn.datasets import make_classification
+import kmeans
 import matplotlib.pyplot as plt
 
 
-def plot_everything(centroids, assignments):
+def make_blobs(n_points=100):
+    points = np.array([[0.5, 0.5], [-0.5, -0.5]])
+    noise = np.random.normal(0, .25, size=(int(n_points/2), 2))
+    noised_points = points[:, None] + noise
+    return noised_points.reshape(-1, 2)
+
+
+def plot_everything(centroids, assignments, legend=False):
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(111)
     colors = ('b', 'g', 'r')
     for centroid, assigns, color in zip(centroids, assignments, colors):
-        plt.scatter(*zip(*assigns), c=color, alpha=0.35)
-        plt.scatter(*centroid, c=color, marker='*', s=300)
+        ax.scatter(*zip(*assigns), c=color, alpha=0.35, s=30, label='blob')
+        ax.scatter(*centroid, c=color, marker='*', s=300, label='center')
+    if legend:
+        plt.legend(loc='best')
     plt.show()
 
 
 if __name__ == '__main__':
-    np.random.seed = 42
-    X, y = make_classification(n_samples=100, n_features=2,
-                               n_redundant=0, class_sep=2,
-                               n_clusters_per_class=1)
+    X = make_blobs()
     centroids, assignments = kmeans.base_python(X.tolist(), k=2)
     plot_everything(centroids, assignments)
