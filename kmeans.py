@@ -1,4 +1,17 @@
 def base_python(X, k):
+    """k-means algorithm implemented fully with only base python.
+
+    Parameters
+    ----------
+    X : list of lists of numerics, data in length of inner list dimensional space
+    k : int, number of clusters
+
+    Returns
+    -------
+    centroids : list of list of numerics, length = k, dimensions same as X
+    centroid_assignments: list of list of lists, for each centroid the data
+                          points that are closest to it
+    """
     centroids = X[:k]
     for _ in range(1000):
         centroids, centroid_assignments = update_centroids(centroids, X)
@@ -6,12 +19,35 @@ def base_python(X, k):
 
 
 def update_centroids(centroids, X):
+    """Helper function to move centroids based on new location.
+
+    Parameters
+    ----------
+    centroids : list of list of numerics, length = k, dimensions same as X
+    X : list of lists of numerics, data in length of inner list dimensional space
+    
+    Returns
+    -------
+    centroids : list of list of numerics, length = k, dimensions same as X
+    centroid_assignments: list of list of lists, for each centroid the data
+    """
     centroid_assignments = get_new_assignments(centroids, X)
     new_centroids = calcualte_new_centroids(centroid_assignments)
     return new_centroids, centroid_assignments
 
 
 def get_new_assignments(centroids, X):
+    """Helper function to find closest centroid for each data point.
+
+    Parameters
+    ----------
+    centroids : list of list of numerics, length = k, dimensions same as X
+    X : list of lists of numerics, data in length of inner list dimensional space
+    
+    Returns
+    -------
+    centroid_assignments: list of list of lists, for each centroid the data
+    """
     centroid_assignments = [[] for _ in centroids]
     for x in X:
         closest_dist = 10000000000000
@@ -26,10 +62,32 @@ def get_new_assignments(centroids, X):
 
 
 def list_euclidean_dist(a, b):
+    """Helper function to find the distance between two points represented as lists.
+
+    Parameters
+    ----------
+    a : list of numerics
+    b : list of numerics
+
+    Returns
+    -------
+    float
+    """
     return sum((da - db) ** 2 for da, db in zip(a, b)) ** 0.5
 
 
 def calcualte_new_centroids(centroid_assignments):
+    """Helper function to find new centroid locations based on new centroid
+    assignments.
+
+    Parameters
+    ----------
+    centroid_assignments: list of list of lists, for each centroid the data
+
+    Returns
+    -------
+    new_centroids : list of list of numerics, length = k, dimensions same as X
+    """
     new_centroids = []
     for centroid_assignment in centroid_assignments:
         centroid = [sum(dim)/len(dim) for dim in zip(*centroid_assignment)]
