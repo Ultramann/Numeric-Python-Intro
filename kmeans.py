@@ -1,8 +1,5 @@
-import random
-
-
 def base_python(X, k):
-    centroids = [random.choice(X) for _ in range(k)]
+    centroids = X[:k]
     for _ in range(1000):
         centroids, centroid_assignments = update_centroids(centroids, X)
     return centroids, centroid_assignments
