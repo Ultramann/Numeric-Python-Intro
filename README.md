@@ -135,15 +135,26 @@ For some context of how k-mean finds the "center" of the "blobs" here's a rough 
 ### Implementations
 </a>
 
-**Note:** The code blocks throughout the remainder of this tutorial will not include doc strings to cut down on unnecessary space usage. In addition, code blocks will be accompanied by descriptions of the code. Also! Doc strings are important! As such, they are obviously included in the actual scripts.
+**Note:** The code blocks throughout the remainder of this tutorial will not include doc strings to cut down on unnecessary space usage. In addition, code blocks will be accompanied by descriptions of the code. However, doc strings are important! As such, they are obviously included in the actual scripts.
 
-First we're going to to look at an implementation using only built-in python functions and data types.
+First we're going to to look at a k-means implementation using only built-in Python functions and data types.
 
 <a name="base_python">
 #### Base Python
 </a>
 
-This k-means implementation lives under the name `base_python` in the `kmeans.py` script in the `src` directory. The meat of it, however, is implemented in two functions: `get_new_assignments` and `calculate_new_centroids` corresponding to steps 2.1 and 2.2, respectively, from above. Let's look at both now.
+This k-means implementation lives under the name `base_python` in the `kmeans.py` script in the `src` directory. At the top level, we see the code outline of the pseudocode above. The `k` centroids are initialized to the first `k` data points, and the stopping condition is set to be a set number of iterations. **Note:** There are better ways to do both of these things, the method here was chosen to boil the algorithm to it's simplest form.
+
+```python
+def base_python(X, k, iterations=1000):
+    centroids = X[:k]
+    for _ in range(iterations):
+        centroid_assignments = get_new_assignments(centroids, X)
+        centroids = calculate_new_centroids(centroid_assignments)
+    return centroids, centroid_assignments
+```
+
+The meat of `base_python`, however, is implemented in two functions: `get_new_assignments` and `calculate_new_centroids` corresponding to steps 2.1 and 2.2, respectively, in the pseudocode above. Let's look at both now.
 
 ##### Getting New Centroid Assignments
 ```python
@@ -159,6 +170,28 @@ def get_new_assignments(centroids, X):
                 closest_centroid = centroid_idx
         centroid_assignments[closest_centroid].append(x)
     return centroid_assignments
+```
+
+The above code has 3 main parts:
+
+1. initialization of the centroid assignments list,
+2. a loop over all the data points,
+3. a nested loop over all the centroids.
+
+The first part makes an empty list of lists. Corresponding by index, each of these inner lists will hold the data points that make up a centroids "blob".
+
+The second part initializes variables `closest_dist` and `closest_centroid` to be updated by the inner loop discussed in part three. Once the inner loop is complete and the closest centroid discovered for a data point, that data point is appended to the list in `centroid_assignments` corresponding to it's closest centroid.
+
+The third part loops over all of the centroids updating the closest one if the current centroids distance is less than the closest centroid it's seen so far.
+
+##### Finding New Centroids
+```python
+def calculate_new_centroids(centroid_assignments):
+    new_centroids = []
+    for centroid_assignment in centroid_assignments:
+        centroid = [sum(dim)/len(dim) for dim in zip(*centroid_assignment)]
+        new_centroids.append(centroid) 
+    return new_centroids
 ```
 
 <a name="np_accel">
