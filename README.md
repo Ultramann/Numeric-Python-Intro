@@ -73,7 +73,7 @@ While much of the slowness in the above add 2 to all the elements of a list exam
 ### Broadcasting
 </a>
 
-NumPy is going to be our saving grace when it comes to escaping the time expensive processing of duck checking. But how is it going to do that? As we saw above in NumPy's self description, it provides "a powerful N-dimensional array object". By definition, at least in the C programming language which is the language Python and NumPy are written in, an array is an ordered, and therefore, indexable group of variables of the same type. This sounds just like a Python list, until we get to the part of having the same type. Another way to put it is that arrays are homogeneous.
+NumPy is going to be our saving grace when it comes to escaping the time expensive processing of duck checking. But how is it going to do that? As we saw above in NumPy's self description, it provides "a powerful N-dimensional array object". By definition, at least in the C programming language which is the language Python and NumPy are written in, an array is an ordered, and therefore, indexable group of variables of the same type. This sounds just like a Python list, until we get to the part about having the same type. Another way to put it is that arrays are homogeneous.
 
 It is this homogeneity that allows NumPy to run much faster that base Python. Consider the following intuitive extension of the above example of adding 2 to all the numbers in a list. If, instead, we use a NumPy array, the array will already know that all of it's elements are numbers, and so it won't need to check if it can add 2 to any of them.
 
@@ -116,7 +116,7 @@ The following image, hopefully in the more intuitive visual way, demonstrates wh
 ### Why k-means?
 </a>
 
-**Talk about why k-means is a good algorithm to choose to demonstrate performant python.**
+It's worth mentioning that k-means is a great algorithm to introduce numeric Python optimizations with since it is both fairly straightforward and has a visually demonstrable result. In addition, it's simplest implementation isn't overly complicated in either base Python or with NumPy.
 
 In order to stay on the rails and keep chugging towards learning about injecting performance into Python and not detour deep into machine learning algorithms...ville, let's move on to pseudocode and then implementations of the k-means algorithm.
 
