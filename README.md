@@ -159,16 +159,16 @@ The meat of `base_python`, however, is implemented in two functions: `get_new_as
 ##### Getting New Centroid Assignments
 ```python
 def get_new_assignments(centroids, X):
-    centroid_assignments = [[] for _ in centroids]
-    for x in X:
+    centroid_assignments = [[] for _ in centroids]   # <--------------------- Part 1
+    for data_point in X:   # <----------------------------------------------- Part 2
         closest_dist = 1e100
         closest_centroid = None
-        for centroid_idx, centroid_location in enumerate(centroids):
-            current_dist = list_euclidean_dist(centroid_location, x)
+        for centroid_idx, centroid_location in enumerate(centroids):   # <--- Part 3
+            current_dist = list_euclidean_dist(centroid_location, data_point)
             if current_dist < closest_dist:
                 closest_dist = current_dist
                 closest_centroid = centroid_idx
-        centroid_assignments[closest_centroid].append(x)
+        centroid_assignments[closest_centroid].append(data_point)
     return centroid_assignments
 ```
 
