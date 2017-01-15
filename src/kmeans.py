@@ -77,6 +77,8 @@ def calculate_new_centroids(centroid_assignments):
     """
     new_centroids = []
     for centroid_assignment in centroid_assignments:
-        centroid = [sum(dim)/len(dim) for dim in zip(*centroid_assignment)]
+        centroid = []
+        for dim in zip(*centroid_assignment):
+            centroid.append(sum(dim) / len(dim))
         new_centroids.append(centroid) 
     return new_centroids
