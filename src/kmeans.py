@@ -15,28 +15,9 @@ def base_python(X, k, iterations=1000):
     """
     centroids = X[:k]
     for _ in range(iterations):
-        centroids, centroid_assignments = update_centroids(centroids, X)
+        centroid_assignments = get_new_assignments(centroids, X)
+        centroids = calculate_new_centroids(centroid_assignments)
     return centroids, centroid_assignments
-
-
-def update_centroids(centroids, X):
-    """Helper function to move centroids based on new location.
-
-    Parameters
-    ----------
-    centroids : list of list of numerics, length = k, dimensions same as X
-    X         : list of lists of numerics, data in length of inner list
-                dimensional space
-    
-    Returns
-    -------
-    centroids : list of list of numerics, length = k, dimensions same as X
-    centroid_assignments: list of list of lists, for each centroid the data
-                          points that are closest to it
-    """
-    centroid_assignments = get_new_assignments(centroids, X)
-    new_centroids = calculate_new_centroids(centroid_assignments)
-    return new_centroids, centroid_assignments
 
 
 def get_new_assignments(centroids, X):
