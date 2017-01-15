@@ -46,7 +46,7 @@ NumPy's front page defines itself as the following:
 
 These are amazing features indeed if we're looking for a library to add some performance to our Python code.
 
-As this repository intends simply to introduce NumPy we will be focusing on the first two bullet points, N-dimensional arrays and broadcasting functions. We should, however, take a moment to talk about some of the intuitions for when and why we can expect performance gains from NumPy.
+As this repository intends simply to introduce NumPy we will be focusing on the first two bullet points, N-dimensional arrays and broadcasting functions. We should, however, take a moment to talk about some of the intuitions for when and why we can expect performance gains from NumPy; part of this is closely tied to Python's limitations.
 
 <a name="duck_limits">
 ### Duck Typing Limitations
@@ -143,7 +143,7 @@ First we're going to to look at a k-means implementation using only built-in Pyt
 #### Base Python
 </a>
 
-This k-means implementation lives under the name `base_python` in the `kmeans.py` script in the `src` directory. At the top level, we see the code outline of the pseudocode above. The `k` centroids are initialized to the first `k` data points, and the stopping condition is set to be a set number of iterations. **Note:** There are better ways to do both of these things, the method here was chosen to boil the algorithm to it's simplest form.
+This k-means implementation lives under the name `base_python` in the `kmeans.py` script in the `src` directory. At the top level, we see the code outline of the pseudocode above. The `k` centroids are initialized to the first `k` data points, and the stopping condition is set to be a fixed number of iterations. **Note:** There are better ways to do both of these things, the method here was chosen to boil the algorithm to it's simplest form.
 
 ```python
 def base_python(X, k, iterations=1000):
@@ -157,13 +157,14 @@ def base_python(X, k, iterations=1000):
 The meat of `base_python`, however, is implemented in two functions: `get_new_assignments` and `calculate_new_centroids` corresponding to steps 2.1 and 2.2, respectively, in the pseudocode above. Let's look at both now.
 
 ##### Getting New Centroid Assignments
+
 ```python
 def get_new_assignments(centroids, X):
-    centroid_assignments = [[] for _ in centroids]   # <--------------------- Part 1
-    for data_point in X:   # <----------------------------------------------- Part 2
+    centroid_assignments = [[] for _ in centroids] # <------------------------ Part 1
+    for data_point in X: # <-------------------------------------------------- Part 2
         closest_dist = 1e100
         closest_centroid = None
-        for centroid_idx, centroid_location in enumerate(centroids):   # <--- Part 3
+        for centroid_idx, centroid_location in enumerate(centroids): # <------ Part 3
             current_dist = list_euclidean_dist(centroid_location, data_point)
             if current_dist < closest_dist:
                 closest_dist = current_dist
@@ -172,7 +173,7 @@ def get_new_assignments(centroids, X):
     return centroid_assignments
 ```
 
-The above code has 3 main parts:
+The above function, which finds the closest centroid to each data point given the current centroids and all of the data, has 3 main parts, following are their explanations:
 
 1. initialization of the centroid assignments list,
 2. a loop over all the data points,
@@ -185,14 +186,37 @@ The second part initializes variables `closest_dist` and `closest_centroid` to b
 The third part loops over all of the centroids updating the closest one if the current centroids distance is less than the closest centroid it's seen so far.
 
 ##### Finding New Centroids
+
 ```python
 def calculate_new_centroids(centroid_assignments):
-    new_centroids = []
-    for centroid_assignment in centroid_assignments:
-        centroid = [sum(dim)/len(dim) for dim in zip(*centroid_assignment)]
+    new_centroids = [] # <---------------------------------------------------- Part 1
+    for centroid_assignment in centroid_assignments: # <---------------------- Part 2
+        centroid = [] # <----------------------------------------------------- Part 3
+        for dim in zip(*centroid_assignment): # <----------------------------- Part 4
+            centroid.append(sum(dim) / len(dim))
         new_centroids.append(centroid) 
     return new_centroids
 ```
+
+This function which takes the output of `get_new_assignments`, a list of lists of data points closest to that centroid, one for each centroid, also has three main parts:
+
+1. initialize a new list to hold all the new centroids to be calculated,
+2. a loop over all the centroid assignment lists,
+3. initialize a new list to hold the values of a single new centroid,
+4. a nested loop over the dimensions of the data points, finding the average value for each.
+
+Parts 1, 2, and 3 are pretty self-explanatory; part 4, though has some slightly shifty things going on. Much of this shiftiness happens in the `for dim in zip(*centroid_assignment)`. In case you haven't encountered it before, the `*` before an iterable "unpacks" it. What this means is that all the lists, here data points, in `centroid_assignment` are pulled apart; when they are immediately zipped back together all of the first elements of the original lists are grouped together, then the second ones, etc.
+
+Let's look at a toy example so we can "see" what's going on:
+
+```python
+>>> centroid_assignment = [[1, 2], [3, 4], [5, 6]]
+# => *centroid_assignment looks like [1, 2] [3, 4] [5, 6] as separate entities
+>>> zip(*centroid_assignment)
+[(1, 3, 5), (2, 4, 6)]
+```
+
+Given this, our for loop is looping over the dimensions of the data points, getting all the values for each dimension of the data points closest to that centroid, one at a time. Once we have this, to find the average value in this dimension we simply sum the values and divide by the number of them.
 
 <a name="np_accel">
 ### NumPy Accelerated
