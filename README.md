@@ -23,7 +23,7 @@ Python is well known to be an incredible learning language for beginning program
 
 What many people don't know about Python when they unknowingly choose it from a stack of languages based on what programming language the internet suggests a beginner start with is that Python has a vast array (no pun intended) of other amazing features, libraries, and applications; many more in fact than a beginner could even begin to guess.
 
-A short, but far from exhaustive, list of fantastic Python offerings to whet your technical palate (**Note:** all of these libraries are open source):
+A short, but far from exhaustive, list of fantastic Python offerings to whet your technical palate (**Note:** All of these libraries are open source):
 * [Django](https://www.djangoproject.com/) - web development.
 * [Selenium-Python](http://selenium-python.readthedocs.io/) - web browser automation.
 * [SciPy](https://www.scipy.org/) - scientific computing.
@@ -236,17 +236,16 @@ As for the k-mean algorithm, the NumPy version still follows the outline laid ou
     1. Find closest centroid to each point.
     2. Move centroids to the average of all the points closest to them.
 
-Another benefit of broadcasting is that is going to lead to shorter code as we won't be writing out explicit for loops. With that in mind, here is the entirety of the k-means algorithm with NumPy.
+Another benefit of broadcasting is that is going to lead to less code as we won't be writing out explicit for loops. With that in mind, here is the entirety of the k-means algorithm, this time assuming that, the data point, `X`, are in a NumPy array and taking advantage of that.
 
 ```python
-import numpy as np
 from scipy.spatial.distance import cdist
+import numpy as np
 
 def numpy(X, k, iterations=1000):
     centroids = X[:k] # <----------------------------------------------------- Part 1
     for _ in range(iterations): # <------------------------------------------- Part 2
         closest_centroid_idxs = cdist(X, centroids).argmin(axis=1) # <-------- Part 2.1
-        centroids = np.zeros(shape=(k, X.shape[1]))
         for idx in range(k): # <---------------------------------------------- Part 2.2
             centroids[idx] = np.mean(X[closest_centroid_idxs == idx])
 
@@ -256,6 +255,43 @@ def numpy(X, k, iterations=1000):
 def make_centroid_assignments(X, closest_idxs):
     return [X[closest_idxs == idx] for idx in np.unique(closest_idxs)]
 ```
+
+As we saw above the first two parts are very straightforward in this bare-bones version of k-means. The real work is being done in parts 2.1 and 2.2.
+
+#### Part 2.1 - Finding Closest Centroid to Each Data Point
+
+A benefit of NumPy that has only been mentioned in passing up until now is the fact that it's part of the SciPy ecosystem. This ecosystem has many other libraries that are designed to integrate tightly NumPy. The code above uses a function from one of these libraries, [`cdist`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html#scipy.spatial.distance.cdist), from SciPy's [`spatial.distance`](https://docs.scipy.org/doc/scipy/reference/spatial.distance.html#module-scipy.spatial.distance) module.
+
+This function, `cdist` does about half the heavy lifting of part 2.1. It computes the distance between all the pairs that can be made from our data, `X`, and the current centroids. **Note:** If you follow the link to `cdist` above, the documentation specifies that it is expects two NumPy arrays as input. The call to `cdist(X, centroids)` then is expected to return a NumPy array with the same number of rows as are in `X` and columns as there are centroids. Let's look at an example:
+
+```python
+>>> X = np.array([[1, 2], [3, 4], [5, 6]])
+>>> centroids = np.array([[0, 1], [7, 8]])
+>>> cdist(X, centroids)
+array([[ 1.41421356,  8.48528137],
+       [ 4.24264069,  5.65685425],
+       [ 7.07106781,  2.82842712]])
+```
+
+The output of `cdist` shows that the first data point, the first row of the output, is 1.414 away from the first centroid and 8.485 away from the second. For the second, 4.243 and 5.657, respectively. Etc. Notice how easy it was to perform such a computation.
+
+Now that we know how to find the distance between every data point and the centroids, how to we find the closest centroid? This is what the [`.argmin`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmin.html#numpy.argmin) is doing above. What [`argmin`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmin.html#numpy.argmin) (the NumPy function version of the method used) does by default is find the index of the minimum value in the given NumPy array. We can see as applied to the same `cdist` call from the code block above:
+
+```python
+>>> cdist(X, centroids).argmin()
+0
+```
+
+This is telling us that the minimum value occurs in the zeroth index, or first row. However, what if we want to find the column with the smallest value for every row? This is where we specify an axis to operate over. The `axis` parameter accepts a dimension over which to operate. Above we told it axis 1, which means the columns. Let's see how this changes things in the toy example we're working with:
+
+```python
+>>> cdist(X, centroids).argmin(axis=1)
+array([0, 0, 1])
+```
+
+Now `argmin` is telling us that the smallest value in the first row is at index 0 in that row, index 0 in the second row, and index 1 in the third. We can verify this is the case by looking at the array above.
+
+#### Part 2.2 - Updating the Centroid Locations
 
 <a name="postmortem">
 ## Postmortem
