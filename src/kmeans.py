@@ -1,5 +1,6 @@
-import numpy as np
 from scipy.spatial.distance import cdist
+import numpy as np
+
 
 def base_python(X, k, iterations=1000):
     """k-means algorithm implemented fully with only base python.
@@ -106,7 +107,6 @@ def numpy(X, k, iterations=1000):
     centroids = X[:k]
     for _ in range(iterations):
         closest_centroid_idxs = cdist(X, centroids).argmin(axis=1)
-        centroids = np.zeros(shape=(k, X.shape[1]))
         for idx in range(k):
             centroids[idx] = np.mean(X[closest_centroid_idxs == idx])
 
