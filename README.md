@@ -183,7 +183,12 @@ The first part makes an empty list of lists. Corresponding by index, each of the
 
 The second part initializes variables `closest_dist` and `closest_centroid` to be updated by the inner loop discussed in part three. Once the inner loop is complete and the closest centroid discovered for a data point, that data point is appended to the list in `centroid_assignments` corresponding to it's closest centroid.
 
-The third part loops over all of the centroids updating the closest one if the current centroids distance is less than the closest centroid it's seen so far.
+The third part loops over all of the centroids updating the closest one if the current centroids distance is less than the closest centroid it's seen so far. To calculate distance it uses the function `list_euclidean_dist`. Here is its code:
+
+```python
+def list_euclidean_dist(a, b):
+    return sum((da - db) ** 2 for da, db in zip(a, b)) ** 0.5
+```
 
 ##### Finding New Centroids
 
@@ -222,7 +227,35 @@ Given this, our for loop is looping over the dimensions of the data points, gett
 ### NumPy Accelerated
 </a>
 
-**Talk about the numpy version of the algorithm**
+The NumPy version of this algorithm is going to take advantage of broadcasting to speed things up. The broadcasting used is slightly more advanced than the example above, but each place it's used the intuition behind what's going on will be explained.
+
+As for the k-mean algorithm, the NumPy version still follows the outline laid out in the pseudocode above. Here it is again so you don't have to scroll back up.
+
+1. Initialize centroids. Aka, choose `k` centroids to start from.
+2. While stopping condition not met:
+    1. Find closest centroid to each point.
+    2. Move centroids to the average of all the points closest to them.
+
+Another benefit of broadcasting is that is going to lead to shorter code as we won't be writing out explicit for loops. With that in mind, here is the entirety of the k-means algorithm with NumPy.
+
+```python
+import numpy as np
+from scipy.spatial.distance import cdist
+
+def numpy(X, k, iterations=1000):
+    centroids = X[:k] # <----------------------------------------------------- Part 1
+    for _ in range(iterations): # <------------------------------------------- Part 2
+        closest_centroid_idxs = cdist(X, centroids).argmin(axis=1) # <-------- Part 2.1
+        centroids = np.zeros(shape=(k, X.shape[1]))
+        for idx in range(k): # <---------------------------------------------- Part 2.2
+            centroids[idx] = np.mean(X[closest_centroid_idxs == idx])
+
+    centroid_assignments = make_centroid_assignments(X, closest_centroid_idxs)
+    return centroids, centroid_assignments
+
+def make_centroid_assignments(X, closest_idxs):
+    return [X[closest_idxs == idx] for idx in np.unique(closest_idxs)]
+```
 
 <a name="postmortem">
 ## Postmortem
