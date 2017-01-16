@@ -1,3 +1,4 @@
+import argparse
 import numpy as np
 import kmeans
 import matplotlib.pyplot as plt
@@ -23,6 +24,15 @@ def plot_everything(centroids, assignments, legend=False):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Run demo of numeric Python with k-means.')
+    parser.add_argument('--base', action='store_true')
+    parser.add_argument('--numpy', action='store_true')
+    args = parser.parse_args()
+
     X = make_blobs()
-    centroids, assignments = kmeans.base_python(X.tolist(), k=2)
-    plot_everything(centroids, assignments)
+    if args.base:
+        base_centroids, base_assignments = kmeans.base_python(X.tolist(), k=2)
+        plot_everything(base_centroids, base_assignments)
+    if args.numpy:
+        numpy_centroids, numpy_assignments = kmeans.numpy(X, k=2)
+        plot_everything(numpy_centroids, numpy_assignments)
