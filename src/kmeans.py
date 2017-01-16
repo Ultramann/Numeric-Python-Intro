@@ -1,3 +1,6 @@
+import numpy as np
+from scipy.spatial.distance import cdist
+
 def base_python(X, k, iterations=1000):
     """k-means algorithm implemented fully with only base python.
 
@@ -6,6 +9,7 @@ def base_python(X, k, iterations=1000):
     X : list of lists of numerics, data in length of inner list
         dimensional space
     k : int, number of clusters
+    iterations : number of times to update centroids
 
     Returns
     -------
@@ -26,8 +30,8 @@ def get_new_assignments(centroids, X):
     Parameters
     ----------
     centroids : list of list of numerics, length = k, dimensions same as X
-    X         : list of lists of numerics, data in length of inner list
-                dimensional space
+    X : list of lists of numerics, data in length of inner list
+        dimensional space
     
     Returns
     -------
@@ -82,3 +86,45 @@ def calculate_new_centroids(centroid_assignments):
             centroid.append(sum(dim) / len(dim))
         new_centroids.append(centroid) 
     return new_centroids
+
+
+def numpy(X, k, iterations=1000):
+    """k-means algorithm implemented with numpy.
+
+    Parameters
+    ----------
+    X : ndarray, 2 dimensions
+    k : int, number of clusters
+    iterations : number of times to update centroids
+
+    Returns
+    -------
+    centroids : ndarray, 2 dimesions
+    centroid_assignments: list of ndarrays, points assigned to each centroid
+                          by index
+    """
+    centroids = X[:k]
+    for _ in range(iterations):
+        closest_centroid_idxs = cdist(X, centroids).argmin(axis=1)
+        centroids = np.zeros(shape=(k, X.shape[1]))
+        for idx in range(k):
+            centroids[idx] = np.mean(X[closest_centroid_idxs == idx])
+
+    centroid_assignments = make_centroid_assignments(X, closest_centroid_idxs)
+    return centroids, centroid_assignments
+
+
+def make_centroid_assignments(X, closest_idxs):
+    """Helper function to divide up data by centroid assignment.
+
+    Parameters
+    ----------
+    X : ndarray, 2 dimensions
+    closest_idxs: ndarray, 1 dimension. Index of closest centroid for each
+                  data point
+
+    Returns
+    -------
+    centroid_assignments: list of ndarrays, points assigned to each centroid
+    """
+    return [X[closest_idxs == idx] for idx in np.unique(closest_idxs)]
