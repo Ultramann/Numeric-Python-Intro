@@ -13,6 +13,7 @@ This repository aims to serve as a tutorial style introduction to discovering nu
     * [Implementations](#implementations)
         1. [Base Python](#base_python)
         2. [NumPy Accelerated](#np_accel)
+        3. [Comparison](#comparison)
 4. [Postmortem](#postmortem)
 
 <a name="preamble">
@@ -94,9 +95,9 @@ array([3, 4, 5, 6, 7, 8])
 array([3, 4, 5, 6, 7, 8])
 ```
 
-One final thing to note about broadcasting is that many of NumPy's functions, not just built-in operations can be broadcasted. We'll be seeing this and broadcasting in higher dimensions later in the tutorial. If you'd like to know more about broadcasting click to above like to NumPy's documentation on broadcasting.
+One final thing to note about broadcasting is that many of NumPy's functions, not just built-in operations can be broadcast. We'll be seeing this and broadcasting in higher dimensions later in the tutorial. If you'd like to know more about broadcasting click the above link to NumPy's documentation.
 
-That's all of the ex us look at an algorithm, k-means, to serve as a medium for observing a need for NumPy and then its power.
+Now let's look at an algorithm, k-means, to serve as a medium for observing a need for NumPy and then its power.
 
 <a name="kmeans">
 ## k-means
@@ -247,7 +248,7 @@ def numpy(X, k, iterations=1000):
     for _ in range(iterations): # <------------------------------------------- Part 2
         closest_centroid_idxs = cdist(X, centroids).argmin(axis=1) # <-------- Part 2.1
         for idx in range(k): # <---------------------------------------------- Part 2.2
-            centroids[idx] = np.mean(X[closest_centroid_idxs == idx])
+            centroids[idx] = np.mean(X[closest_centroid_idxs == idx], axis=0)
 
     centroid_assignments = make_centroid_assignments(X, closest_centroid_idxs)
     return centroids, centroid_assignments
@@ -260,7 +261,7 @@ As we saw above the first two parts are very straightforward in this bare-bones 
 
 #### Part 2.1 - Finding Closest Centroid to Each Data Point
 
-A benefit of NumPy that has only been mentioned in passing up until now is the fact that it's part of the SciPy ecosystem. This ecosystem has many other libraries that are designed to integrate tightly NumPy. The code above uses a function from one of these libraries, [`cdist`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html#scipy.spatial.distance.cdist), from SciPy's [`spatial.distance`](https://docs.scipy.org/doc/scipy/reference/spatial.distance.html#module-scipy.spatial.distance) module.
+A benefit of NumPy that has only been mentioned in passing up until now is the fact that it's part of the SciPy ecosystem. This ecosystem has many other libraries that are designed to integrate tightly with NumPy. The code above uses a function from one of these libraries, [`cdist`](https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.distance.cdist.html#scipy.spatial.distance.cdist), from SciPy's [`spatial.distance`](https://docs.scipy.org/doc/scipy/reference/spatial.distance.html#module-scipy.spatial.distance) module.
 
 This function, `cdist` does about half the heavy lifting of part 2.1. It computes the distance between all the pairs that can be made from our data, `X`, and the current centroids. **Note:** If you follow the link to `cdist` above, the documentation specifies that it is expects two NumPy arrays as input. The call to `cdist(X, centroids)` then is expected to return a NumPy array with the same number of rows as are in `X` and columns as there are centroids. Let's look at an example:
 
@@ -275,14 +276,14 @@ array([[ 1.41421356,  8.48528137],
 
 The output of `cdist` shows that the first data point, the first row of the output, is 1.414 away from the first centroid and 8.485 away from the second. For the second, 4.243 and 5.657, respectively. Etc. Notice how easy it was to perform such a computation.
 
-Now that we know how to find the distance between every data point and the centroids, how to we find the closest centroid? This is what the [`.argmin`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmin.html#numpy.argmin) is doing above. What [`argmin`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmin.html#numpy.argmin) (the NumPy function version of the method used) does by default is find the index of the minimum value in the given NumPy array. We can see as applied to the same `cdist` call from the code block above:
+Now that we know how to find the distance between every data point and the centroids, how do we find the closest centroid? This is what the [`.argmin`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmin.html#numpy.argmin) is doing above. What [`argmin`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmin.html#numpy.argmin) (the NumPy function version of the method used) does by default is find the index of the minimum value in the given NumPy array. We can see as applied to the same `cdist` call from the code block above:
 
 ```python
 >>> cdist(X, centroids).argmin()
 0
 ```
 
-This is telling us that the minimum value occurs in the zeroth index, or first row. However, what if we want to find the column with the smallest value for every row? This is where we specify an axis to operate over. The `axis` parameter accepts a dimension over which to operate. Above we told it axis 1, which means the columns. Let's see how this changes things in the toy example we're working with:
+This is telling us that the minimum value occurs in the zeroth index, or first row. What if we want to find the column with the smallest value for every row? This is where we specify an axis to operate over. The `axis` parameter accepts a dimension over which to operate. Above we told it axis 1, which means the columns. Let's see how this changes things in the toy example we're working with:
 
 ```python
 >>> cdist(X, centroids).argmin(axis=1)
@@ -291,7 +292,35 @@ array([0, 0, 1])
 
 Now `argmin` is telling us that the smallest value in the first row is at index 0 in that row, index 0 in the second row, and index 1 in the third. We can verify this is the case by looking at the array above.
 
+From all of this we can see that `closest_centroid_idxs` is a NumPy array of indices, one for each of the data points, corresponding to its closest centroid.
+
 #### Part 2.2 - Updating the Centroid Locations
+
+As we saw in the base Python solution, to update the centroid locations given the new centroid assignments we just take the mean, in each dimension, of all the points assigned to a centroid, for each centroid. The first part of this necessitates looping for the centroid indices, `for idx in range(k)`. Then, once we know what centroid, by index, we're updating we can go back to using NumPy's power.
+
+In the line `centroids[idx] = np.mean(X[closest_centroid_idxs == idx], axis=0)` we see broadcasting along with a feature of NumPy not yet mentioned. The `closest_centroid_idxs == idx` compares the NumPy array of centroid indices to the single centroid index the loop is on with the equality operator, `==`. If these centroid indices were stored in a Python list this expression would always evaluate to `False` since a number is never a list. However, here we're using a NumPy array, full of numbers, so what you do think happens when we use the equality operator? That's right, it gets broadcast! The implication is that we're having NumPy compare the single value of `idx` to each of the values in `closest_centroid_idxs` with `==`, this returns a NumPy array of bools.
+
+The new feature of NumPy that hasn't been mentioned yet takes advantage of this boolean array. Through a process "boolean indexing" only the elements in `X` where `closest_centroid_idxs == idx` evaluated to `True` are returned. The upshot of this? For each centroid, we now have a concise way to access only the elements that are assigned to it, through it's index.
+
+The last part of the line uses NumPy's built in `mean` function to vectorize the computations involved in summing up all the values in each dimension for the data points picked up by the boolean indexing. How does it do it for every dimension? When we specify `axis=0` we're saying operate over the rows. Let's look at this in code.
+
+```python
+>>> X = np.array([[1, 2], [3, 4], [5, 6]])
+>>> np.mean(X)
+3.5
+>>> np.mean(X, axis=0)
+array([ 3.,  4.])
+```
+
+In the first call to `np.mean` we are only returned a single number. NumPy just took the mean of all the numbers in `X`. In the second version, `axis=0`, NumPy again took the mean, by operated over the rows, return to us an array with the same length as a single row in `X`.
+
+Now we can see that this step changes the location of each centroid by calculating its new location and assigning that to its corresponding index in the centroids array.
+
+And that's it!
+
+<a name="comparison">
+### Comparison
+</a>
 
 <a name="postmortem">
 ## Postmortem
