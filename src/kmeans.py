@@ -108,7 +108,7 @@ def numpy(X, k, iterations=1000):
     for _ in range(iterations):
         closest_centroid_idxs = cdist(X, centroids).argmin(axis=1)
         for idx in range(k):
-            centroids[idx] = np.mean(X[closest_centroid_idxs == idx])
+            centroids[idx] = np.mean(X[closest_centroid_idxs == idx], axis=0)
 
     centroid_assignments = make_centroid_assignments(X, closest_centroid_idxs)
     return centroids, centroid_assignments
