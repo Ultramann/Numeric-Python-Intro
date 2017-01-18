@@ -1,6 +1,6 @@
 # An Introduction to Performant Python
 
-This repository aims to serve as a tutorial style introduction to discovering numeric performance optimizations in the Python programming language. It assumes only a cursory knowledge of Python and a tolerance for pinches of math.
+This repository aims to serve as a tutorial style introduction to discovering numeric performance optimizations in the Python programming language. It assumes only a cursory knowledge of Python and a tolerance for pinches of math. Requisite Python libraries are: `scipy`, `numpy`, and `matplotlib`.
 
 ## Table of Contents:
 1. [Preamble](#preamble)
@@ -224,6 +224,8 @@ Let's look at a toy example so we can "see" what's going on:
 
 Given this, our for loop is looping over the dimensions of the data points, getting all the values for each dimension of the data points closest to that centroid, one at a time. Once we have this, to find the average value in this dimension we simply sum the values and divide by the number of them.
 
+You can see an example result of this method by running `python demo.py --base` at the command line. The demo script can be found in the `src` directory. Running the demo script with the base flag will produce a `matplotlib` plot with two data blobs plotted and colored by the centroid found by the algorithm, marked as stars.
+
 <a name="np_accel">
 ### NumPy Accelerated
 </a>
@@ -316,7 +318,7 @@ In the first call to `np.mean` we are only returned a single number. NumPy just 
 
 Now we can see that this step changes the location of each centroid by calculating its new location and assigning that to its corresponding index in the centroids array.
 
-And that's it!
+And that's it! As with the base Python implementation you can run the demo script with NumPy by running it with the numpy flag, e.g. `python demo.py --numpy` at the command line.
 
 <a name="comparison">
 ### Comparison
