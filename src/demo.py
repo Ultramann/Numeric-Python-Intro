@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import kmeans
 import matplotlib.pyplot as plt
+from time import time
 
 
 def make_blobs(n_points=100):
@@ -11,16 +12,15 @@ def make_blobs(n_points=100):
     return noised_points.reshape(-1, 2)
 
 
-def plot_everything(centroids, assignments, legend=False):
-    fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(111)
+def plot_setup(centroids, assignments, ax, algo=None, total_time=None, legend=False):
     colors = ('b', 'g', 'r')
     for centroid, assigns, color in zip(centroids, assignments, colors):
         ax.scatter(*zip(*assigns), c=color, alpha=0.35, s=30, label='blob')
         ax.scatter(*centroid, c=color, marker='*', s=300, label='center')
+    if algo and total_time:
+        ax.set_title('{}: {:.2f} seconds'.format(algo, total_time))
     if legend:
         plt.legend(loc='best')
-    plt.show()
 
 
 if __name__ == '__main__':
@@ -31,8 +31,24 @@ if __name__ == '__main__':
 
     X = make_blobs()
     if args.base:
+        fig, ax = plt.subplots(1, 1, figsize=(8, 8))
         base_centroids, base_assignments = kmeans.base_python(X.tolist(), k=2)
-        plot_everything(base_centroids, base_assignments)
+        plot_setup(base_centroids, base_assignments, ax)
+        plt.show()
+
     if args.numpy:
+        fig, ax = plt.subplots(1, 1, figsize=(8, 8))
         numpy_centroids, numpy_assignments = kmeans.numpy(X, k=2)
-        plot_everything(numpy_centroids, numpy_assignments)
+        plot_setup(numpy_centroids, numpy_assignments, ax)
+        plt.show()
+
+    if not (args.base or args.numpy):
+        fig, ax_lst = plt.subplots(1, 2, figsize=(16, 8))
+        for ax, data, algo, km in zip(ax_lst, (X.tolist(), X), ('Base Python', 'NumPy'),
+                                                    (kmeans.base_python, kmeans.numpy)):
+            start_time = time()
+            centroids, assignments = km(data, k=2)
+            total_time = time() - start_time
+            plot_setup(centroids, assignments, ax, algo, total_time)
+        fig.suptitle('Timing', fontsize=25)
+        plt.show()
