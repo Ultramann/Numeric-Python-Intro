@@ -55,38 +55,38 @@ As this repository intends simply to introduce NumPy we will be focusing on the 
 
 So we have some intuition for one of the reasons using NumPy might give us faster code let's discuss type systems for a moment.
 
-Python is colloquially referred to a duck typed language, deriving from that phrase now known as the duck test, "If it looks like a duck, swims like a duck, and quacks like a duck, then it probably is a duck." You might be wondering, how in the world is this saying applicable to programming, aka, what's all this quack about? So let's get into that.
+Python is colloquially referred to a duck typed language, deriving from thr phrase now known as the duck test, "If it looks like a duck, swims like a duck, and quacks like a duck, then it probably is a duck." You might be wondering, how in the world is this saying applicable to programming, aka, what's all this quack about?
 
-In Python, since it's an interpreted language, when you type the command `4 + 5` it doesn't __*know*__ what 4 and 5 are so it has to go check to see if you can add them together. As it turns out, you can, so Python with return `9`.
+In Python, since it's an interpreted language, when you type the command `4 + 5` it doesn't __*know*__ what 4 and 5 are so it has to go check to see if you can add them together. As it turns out, you can, so Python will return `9` of type integer since that was the type of the two numbers we started with.
 
-This going and checking if you can perform the requested operation in real time is part of what makes Python easy to program in. For example, if you want to do something in a `while` loop until a list, `ex_list`, is empty you could write `while len(ex_list) >= 0`. However, we can use duck typing to our advantage and instead write `while ex_list`. This works because Python knows `while` needs a boolean, so it will silently try to interpret `ex_list` as one; luckily a list only evaluates to `False` when it is empty, which is exactly what we want!
+Python is always checking if you can perform the requested operation in real time. And this is part of what makes Python programming a delight. For example, if you want to do something in a `while` loop until a list, `ex_list`, is empty you could write `while len(ex_list) >= 0`. However, we can use duck typing to our advantage and instead write `while ex_list`. This works because Python knows `while` needs a boolean, so it will silently try to interpret `ex_list` as one; luckily a list only evaluates to `False` when it is empty, which is exactly what we want!
 
-There is, however, a downside to duck typing. It incurs a time penalty, read: it can be slow sometimes. One of those times is when you're looping over numbers, and performing numeric operations on them. Even if you know you have a list only containing numbers, if you want to add 2 to every one of those numbers, you'll need to loop over the list and add 2 to every number; each time though, Python will need to manually check if it can add 2 to that element of the list. :'(
+There is, however, a downside to duck typing. It incurs a time penalty; read: it can be slow sometimes. One of those times is when you're looping over numbers and performing numeric operations on them. Even if you have a list only containing numbers, to add 2 to every one of those numbers you'll need to loop over the list and add 2 to every number separately. Each time though, Python will need to manually check if it can, is allowed to, add 2 to that element of the list.
 
 ```python
 >>> [i + 2 for i in [1, 2, 3, 4, 5, 6]]
 [3, 4, 5, 6, 7, 8]
 ```
 
-While much of the slowness in the above add 2 to all the elements of a list example can be attributed to duck typing pitfalls, we can see another aspect of the situation that is limiting is the nature of a Python list. Since Python lists are heterogeneous, this manual check for ability to add is actually necessary. Is there a different data structure, then, that could alleviate this pain point? I think you can guess where we're headed.
+While much of the slowness in the above "add 2 to all the elements of a list" example can be attributed to duck typing pitfalls, we can see another aspect of the situation as the limiting the nature of a Python list. Since Python lists are heterogeneous, this manual check for the ability to add a number to it's elements is actually necessary. Is there a different data structure, then, that could alleviate this pain point?
 
 <a name="broadcasting">
 ### Broadcasting
 </a>
 
-NumPy is going to be our saving grace when it comes to escaping the time expensive processing of duck checking. But how is it going to do that? As we saw above in NumPy's self description, it provides "a powerful N-dimensional array object". By definition, at least in the C programming language which is the language Python and NumPy are written in, an array is an ordered, and therefore, indexable group of variables of the same type. This sounds just like a Python list, until we get to the part about having the same type. Another way to put it is that arrays are homogeneous.
+NumPy is going to be our saving grace when it comes to escaping the time expensive processing of duck checking. As we saw above in NumPy's self description, it provides "a powerful N-dimensional array object". By definition, at least in the C programming language which is the language Python and NumPy are written in, an array is an ordered, and therefore, indexable group of variables of the same type. This sounds just like a Python list, until we get to the part about having the same type. Another way to put it is that arrays are homogeneous.
 
-It is this homogeneity that allows NumPy to run much faster that base Python. Consider the following intuitive extension of the above example of adding 2 to all the numbers in a list. If, instead, we use a NumPy array, the array will already know that all of it's elements are numbers, and so it won't need to check if it can add 2 to any of them.
+It is this homogeneity that allows NumPy to run much faster than base Python. Consider the following intuitive extension of the above add 2 example. If, instead, we use a NumPy array, the array will already know that all of it's elements are numbers -- it has to because it's homogeneous -- therefore it won't need to check if it can add 2 to any of them, it knows it can!
 
-In fact, in many situations, like the add 2 one above, we won't even need to write a loop to perform our operation! "How is possible?", you ask. Through the magic of the second feature of NumPy had listed above, [broadcasting](https://docs.scipy.org/doc/numpy/user/basics.broadcasting.html).
+In fact, in many situations, like the add 2 one above, we won't even need to write a loop to perform our operation! "How is possible?", you ask. Through the magic of the second feature of NumPy listed above, [broadcasting](https://docs.scipy.org/doc/numpy/user/basics.broadcasting.html).
 
-Broadcasting, also known as vectorization, provides a way to express operations over an entire array instead of having a manually loop over every individual element. Lets take a look a what this looks like with our add 2 example a picture then in code.
+Broadcasting, also known as vectorization, provides a way to express operations over an entire array instead of having a manually loop over every individual element. Let's see this applied to our add 2 example in a picture then in code.
 
 <div style="text-align: center"><img src="images/broadcasting.png" style="width: 600px"></div>
 
-Basically all NumPy does when you try to add a single number to an array is infer that you want to add it to every element of the array. The really cool thing this that NumPy doesn't actually make an array full of 2's. Instead it actually performs the exact same loop we saw above, but it does it in C instead of Python.
+All NumPy does when you try to add a single number to an array is infer that you want to add it to every individual element of the array. The really cool thing about this is that NumPy doesn't actually make an array full of 2s. Instead it actually performs the exact same loop we saw above, but it does it behind the scenes in C instead of Python.
 
-We can see an equivalence of these two interpretations in the following code block. Note, the first one is actually faster because we don't have to move between copies of 2.
+We can see an equivalence of these two interpretations in the following code block. **Note:** The first one is actually faster because we don't have to move between copies of 2.
 
 ```python
 >>> np.array([1, 2, 3, 4, 5, 6]) + 2
@@ -95,7 +95,7 @@ array([3, 4, 5, 6, 7, 8])
 array([3, 4, 5, 6, 7, 8])
 ```
 
-One final thing to note about broadcasting is that many of NumPy's functions, not just built-in operations can be broadcast. We'll be seeing this and broadcasting in higher dimensions later in the tutorial. If you'd like to know more about broadcasting click the above link to NumPy's documentation.
+One final thing to note about broadcasting is that many of NumPy's functions, beyond just built-in operations, can be broadcast. We'll be seeing this and broadcasting in higher dimensions later in the tutorial. If you'd like to know more about broadcasting click the above link to NumPy's documentation.
 
 Now let's look at an algorithm, k-means, to serve as a medium for observing a need for NumPy and then its power.
 
@@ -109,9 +109,9 @@ Now let's look at an algorithm, k-means, to serve as a medium for observing a ne
 
 The following image, hopefully in the more intuitive visual way, demonstrates what is meant by "centers" and "blobs".
 
-![](images/example_clustering.png)
+<div style="text-align: center"><img src="images/example_clustering.png" style="width: 300px"></div>
 
-**Note:** In practice these "blobs" exist in a space with many more than two dimensions. The above plot is presented solely as a device to gain intuition for what we're trying to accomplish with k-means.
+**Note:** In practice these "blobs" exist in a space with many more than two dimensions. The above plot and the rest in this tutorial are presented in 2 dimensions solely as a device to gain intuition for what we're trying to accomplish with k-means.
 
 <a name="whyk">
 ### Why k-means?
@@ -259,7 +259,7 @@ def make_centroid_assignments(X, closest_idxs):
     return [X[closest_idxs == idx] for idx in np.unique(closest_idxs)]
 ```
 
-As we saw above the first two parts are very straightforward in this bare-bones version of k-means. The real work is being done in parts 2.1 and 2.2.
+As we saw above the first two parts are very straightforward in this bare-bones version of k-means. The real work is being done in parts 2.1 and 2.2. The last function, `make_centroid_assignments` is simply a convenience function to make the same style centroid assignments list as we had in the base Python version.
 
 #### Part 2.1 - Finding Closest Centroid to Each Data Point
 
@@ -328,7 +328,7 @@ Now it's time to inspect that promise made by the title of the repository. Check
 
 <div style="text-align: center"><img src="images/comparision_100.png" style="width: 600px"></div>
 
-We can see that running the base Python version took about a third of a second, whereas the NumPy version finished in under a tenth of a second. **Note:** these times are for the 1000 updates on 100 data points that the script generates by default and on a MacBook Pro with a 2.7 GHz i5 processor.
+We can see that running the base Python version took about a third of a second, whereas the NumPy version finished in under a tenth of a second. **Note:** These times are for the 1000 updates on 100 data points that the script generates by default and on a MacBook Pro with a 2.7 GHz i5 processor.
 
 This difference of approximately a fifth of a second might not seem bad, but consider that this means the base version is about 5 times slower. Further, we need to remember that this example only uses 100 data points. The real power will become apparent when we scale to a more realistic number. To test this, we can use the demo script's "count" flag and pass it a number after. The plot below was produced with the command `python demo.py --count 1000`.
 
