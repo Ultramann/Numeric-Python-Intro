@@ -21,7 +21,7 @@ def base_python(X, k, iterations=1000):
     centroids = X[:k]
     for _ in range(iterations):
         centroid_assignments = get_new_assignments(centroids, X)
-        centroids = calculate_new_centroids(centroid_assignments)
+        calculate_new_centroids(centroids, centroid_assignments)
     return centroids, centroid_assignments
 
 
@@ -67,26 +67,22 @@ def list_euclidean_dist(a, b):
     return sum((da - db) ** 2 for da, db in zip(a, b)) ** 0.5
 
 
-def calculate_new_centroids(centroid_assignments):
+def calculate_new_centroids(centroids, centroid_assignments):
     """Helper function to find new centroid locations based on new centroid
-    assignments.
+    assignments. Directly mutates the passed centroids list.
 
     Parameters
     ----------
+    centroids : list of list of numerics, length = k, dimensions same as X
     centroid_assignments: list of list of lists, for each centroid the data
                           points that are closest to it
 
-    Returns
-    -------
-    new_centroids : list of list of numerics, length = k, dimensions same as X
     """
-    new_centroids = []
-    for centroid_assignment in centroid_assignments:
+    for idx, centroid_assignment in enumerate(centroid_assignments):
         centroid = []
         for dim in zip(*centroid_assignment):
             centroid.append(sum(dim) / len(dim))
-        new_centroids.append(centroid) 
-    return new_centroids
+        centroids[idx] = centroid 
 
 
 def numpy(X, k, iterations=1000):
