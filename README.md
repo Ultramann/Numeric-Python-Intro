@@ -1,6 +1,6 @@
 # An Introduction to Performant Python
 
-This repository aims to serve as a tutorial style introduction to discovering numeric performance optimizations in the Python programming language. It assumes only a cursory knowledge of Python and a tolerance for pinches of math. Requisite Python libraries are: `scipy`, `numpy`, and `matplotlib`.
+This repository aims to serve as a tutorial style introduction to discovering numeric performance optimizations in the Python programming language. It assumes only a cursory knowledge of Python and a tolerance for pinches of math. Requisite Python libraries to run the included code are: `scipy`, `numpy`, and `matplotlib`.
 
 ## Table of Contents:
 1. [Preamble](#preamble)
@@ -224,7 +224,7 @@ Let's look at a toy example so we can "see" what's going on:
 
 Given this, our for loop is looping over the dimensions of the data points, getting all the values for each dimension of the data points closest to that centroid, one at a time. Once we have this, to find the average value in this dimension we simply sum the values and divide by the number of them.
 
-You can see an example result of this method by running `python demo.py --base` at the command line. The demo script can be found in the `src` directory. Running the demo script with the base flag will produce a `matplotlib` plot with two data blobs plotted and colored by the centroid found by the algorithm, marked as stars.
+You can see an example result of this method by running `python demo.py --base` at the command line. The demo script can be found in the `src` directory. Running the demo script with the "base" flag will produce a `matplotlib` plot with two data blobs plotted and colored by the centroid found by the algorithm, marked as stars.
 
 <a name="np_accel">
 ### NumPy Accelerated
@@ -318,11 +318,25 @@ In the first call to `np.mean` we are only returned a single number. NumPy just 
 
 Now we can see that this step changes the location of each centroid by calculating its new location and assigning that to its corresponding index in the centroids array.
 
-And that's it! As with the base Python implementation you can run the demo script with NumPy by running it with the numpy flag, e.g. `python demo.py --numpy` at the command line.
+And that's it! As with the base Python implementation you can run the demo script with NumPy by running it with the "numpy" flag, e.g. `python demo.py --numpy` at the command line.
 
 <a name="comparison">
 ### Comparison
 </a>
+
+Now it's time to inspect that promise made by the title of the repository. Check the performance of our two implementations. The demo script has this ability built in. In fact, if you don't pass any flags it will compare the base Python version with the NumPy version in a side by side plot. Both versions are timed while running and their run time is displayed in the title of each sub-plot. Thus, running `python demo.py` at the command line will produce a plot like the one below.
+
+<div style="text-align: center"><img src="images/comparision_100.png" style="width: 600px"></div>
+
+We can see that running the base Python version took about a third of a second, whereas the NumPy version finished in under a tenth of a second. **Note:** these times are for the 1000 updates on 100 data points that the script generates by default and on a MacBook Pro with a 2.7 GHz i5 processor.
+
+This difference of approximately a fifth of a second might not seem bad, but consider that this means the base version is about 5 times slower. Further, we need to remember that this example only uses 100 data points. The real power will become apparent when we scale to a more realistic number. To test this, we can use the demo script's "count" flag and pass it a number after. The plot below was produced with the command `python demo.py --count 1000`.
+
+<div style="text-align: center"><img src="images/comparision_1000.png" style="width: 600px"></div>
+
+Here we see that the runtime of the base Python version has grown linearly, 10 times more data points taking ten times as long, whereas the NumPy version is only taking approximately twice as long. In addition, at this point the NumPy version is running about 20 times faster than the base version. That's what I call a performance increase! Last example for dramatic purposes. 10000 points, which is finally getting closer to the size of data we might want to analyze. I'll let you be the judge.
+
+<div style="text-align: center"><img src="images/comparision_10000.png" style="width: 600px"></div>
 
 <a name="postmortem">
 ## Postmortem
