@@ -51,7 +51,7 @@ if __name__ == '__main__':
         plot_setup(numpy_centroids, numpy_assignments, ax, 'NumPy k-means')
         plt.show()
 
-    if not (args.base or args.numpy):
+    if not any([args.ex, args.base, args.numpy]):
         fig, ax_lst = plt.subplots(1, 2, figsize=(16, 8))
         for ax, data, algo, km in zip(ax_lst, (X.tolist(), X), ('Base Python', 'NumPy'),
                                                     (kmeans.base_python, kmeans.numpy)):
