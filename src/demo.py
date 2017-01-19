@@ -1,11 +1,22 @@
+from time import time
 import argparse
-import numpy as np
 import kmeans
 import matplotlib.pyplot as plt
-from time import time
+import numpy as np
 
 
 def make_blobs(n_points):
+    """Convenience function to create data in two clusters, one around
+    (0.5, 0,5) and the other (-0.5, -0.5).
+
+    Parameters
+    ----------
+    n_points : int, total number of data points in both clusters
+
+    Returns
+    -------
+    ndarray, 2D
+    """
     points = np.array([[0.5, 0.5], [-0.5, -0.5]])
     noise = np.random.normal(0, .25, size=(int(n_points/2), 2))
     noised_points = points[:, None] + noise
@@ -13,6 +24,16 @@ def make_blobs(n_points):
 
 
 def plot_setup(centroids, assignments, ax, title=None, legend=False):
+    """Convenience function to plot clusters and centroids.
+
+    Parameters
+    ----------
+    centroids : list-like 2D
+    assignments : list of list-like
+    ax : matplotlib axis object
+    title : str, to put on ax
+    legend : bool, plot legend
+    """
     colors = ('b', 'g', 'r')
     for centroid, assigns, color in zip(centroids, assignments, colors):
         size_alpha = 1 / (np.log2(len(assignments)) + 2)
@@ -26,10 +47,14 @@ def plot_setup(centroids, assignments, ax, title=None, legend=False):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run demo of numeric Python with k-means.')
-    parser.add_argument('--count', default=100, type=int)
-    parser.add_argument('--base', action='store_true')
-    parser.add_argument('--numpy', action='store_true')
-    parser.add_argument('--ex', action='store_true')
+    parser.add_argument('--count', default=100, type=int,
+                        help='number of data points to generate in total')
+    parser.add_argument('--base', action='store_true',
+                        help='run with base python implementation')
+    parser.add_argument('--numpy', action='store_true',
+                        help='run with numpy implementation')
+    parser.add_argument('--ex', action='store_true',
+                        help='run to create example plot')
     args = parser.parse_args()
 
     X = make_blobs(args.count)
