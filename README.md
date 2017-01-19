@@ -14,7 +14,7 @@ This repository aims to serve as a tutorial style introduction to discovering nu
         1. [Base Python](#base_python)
         2. [NumPy Accelerated](#np_accel)
         3. [Comparison](#comparison)
-4. [Postmortem](#postmortem)
+4. [Just the Beginning](#beginning)
 
 <a name="preamble">
 ## Preamble
@@ -136,22 +136,22 @@ For some context of how k-mean finds the "center" of the "blobs" here's a rough 
 ### Implementations
 </a>
 
-**Note:** The code blocks throughout the remainder of this tutorial will not include doc strings to cut down on unnecessary space usage. In addition, code blocks will be accompanied by descriptions of the code. However, doc strings are important! As such, they are obviously included in the actual scripts.
+**Note:** The code blocks throughout the remainder of this tutorial will not include doc strings to cut down on unnecessary space usage. Also, because code blocks will be accompanied by explanations. However, doc strings are important! As such, they are obviously included in the actual scripts which are located in the `src` directory.
 
-First we're going to to look at a k-means implementation using only built-in Python functions and data types.
+First we're going to to look at a k-means implementation using only built-in Python functions and data structures.
 
 <a name="base_python">
 #### Base Python
 </a>
 
-This k-means implementation lives under the name `base_python` in the `kmeans.py` script in the `src` directory. At the top level, we see the code outline of the pseudocode above. The `k` centroids are initialized to the first `k` data points, and the stopping condition is set to be a fixed number of iterations. **Note:** There are better ways to do both of these things, the method here was chosen to boil the algorithm to it's simplest form.
+This k-means implementation lives under the name `base_python` in the `kmeans.py` script in the `src` directory. At the top level, we see a code outline mirroring the pseudocode above. The `k` centroids are initialized to the first `k` data points, and the stopping condition is set to be a fixed number of iterations. **Note:** There are better ways to do both of these things, the method here was chosen to boil the algorithm to it's simplest form.
 
 ```python
 def base_python(X, k, iterations=1000):
     centroids = X[:k]
     for _ in range(iterations):
         centroid_assignments = get_new_assignments(centroids, X)
-        centroids = calculate_new_centroids(centroid_assignments)
+        calculate_new_centroids(centroids, centroid_assignments)
     return centroids, centroid_assignments
 ```
 
@@ -180,9 +180,9 @@ The above function, which finds the closest centroid to each data point given th
 2. a loop over all the data points,
 3. a nested loop over all the centroids.
 
-The first part makes an empty list of lists. Corresponding by index, each of these inner lists will hold the data points that make up a centroids "blob".
+The first part makes an empty list of lists. Corresponding by index, each of these inner lists will hold the data points that make up a centroid's "blob".
 
-The second part initializes variables `closest_dist` and `closest_centroid` to be updated by the inner loop discussed in part three. Once the inner loop is complete and the closest centroid discovered for a data point, that data point is appended to the list in `centroid_assignments` corresponding to it's closest centroid.
+The second part initializes variables `closest_dist` and `closest_centroid` to be updated by the inner loop discussed in part three. Once the inner loop is complete and the closest centroid discovered for a data point, that data point is appended to the list in `centroid_assignments` corresponding to it's `closest_centroid` index.
 
 The third part loops over all of the centroids updating the closest one if the current centroids distance is less than the closest centroid it's seen so far. To calculate distance it uses the function `list_euclidean_dist`. Here is its code:
 
@@ -191,27 +191,26 @@ def list_euclidean_dist(a, b):
     return sum((da - db) ** 2 for da, db in zip(a, b)) ** 0.5
 ```
 
+Nothing fancy, just looking at each dimension in two list and taking the square root of the sum of their squared differences.
+
 ##### Finding New Centroids
 
 ```python
 def calculate_new_centroids(centroid_assignments):
-    new_centroids = [] # <---------------------------------------------------- Part 1
-    for centroid_assignment in centroid_assignments: # <---------------------- Part 2
-        centroid = [] # <----------------------------------------------------- Part 3
-        for dim in zip(*centroid_assignment): # <----------------------------- Part 4
+    for idx, centroid_assignment in enumerate(centroid_assignments): # <------ Part 1
+        centroid = [] # <----------------------------------------------------- Part 2
+        for dim in zip(*centroid_assignment): # <----------------------------- Part 3
             centroid.append(sum(dim) / len(dim))
-        new_centroids.append(centroid) 
-    return new_centroids
+        centroids[idx] = centroid 
 ```
 
 This function which takes the output of `get_new_assignments`, a list of lists of data points closest to that centroid, one for each centroid, also has three main parts:
 
-1. initialize a new list to hold all the new centroids to be calculated,
-2. a loop over all the centroid assignment lists,
-3. initialize a new list to hold the values of a single new centroid,
-4. a nested loop over the dimensions of the data points, finding the average value for each.
+1. a loop over all the centroid assignment lists,
+2. initialize a new list to hold the values of a single new centroid,
+3. a nested loop over the dimensions of the data points, finding the average value for each.
 
-Parts 1, 2, and 3 are pretty self-explanatory; part 4, though has some slightly shifty things going on. Much of this shiftiness happens in the `for dim in zip(*centroid_assignment)`. In case you haven't encountered it before, the `*` before an iterable "unpacks" it. What this means is that all the lists, here data points, in `centroid_assignment` are pulled apart; when they are immediately zipped back together all of the first elements of the original lists are grouped together, then the second ones, etc.
+Parts 1 and 2 are pretty self-explanatory; part 3, though has some slightly shifty things going on. Much of this shiftiness happens in the `for dim in zip(*centroid_assignment)`. In case you haven't encountered it before, the `*` before an iterable "unpacks" it. What this means is that all the lists, here data points, in `centroid_assignment` are pulled apart; when they are immediately zipped back together all of the first elements of the original lists are grouped together, then the second ones, etc.
 
 Let's look at a toy example so we can "see" what's going on:
 
@@ -222,9 +221,9 @@ Let's look at a toy example so we can "see" what's going on:
 [(1, 3, 5), (2, 4, 6)]
 ```
 
-Given this, our for loop is looping over the dimensions of the data points, getting all the values for each dimension of the data points closest to that centroid, one at a time. Once we have this, to find the average value in this dimension we simply sum the values and divide by the number of them.
+Given this, our for loop is looping over the dimensions of the data points, getting all the values for each dimension of the data points closest to that centroid, one at a time. Once we have this, to find the average value in this dimension we simply sum the values and divide by the number of them. Each full list describing a new centroid location is immediately stored in the passed centroids list at the appropriate index.
 
-You can see an example result of this method by running `python demo.py --base` at the command line. The demo script can be found in the `src` directory. Running the demo script with the "base" flag will produce a `matplotlib` plot with two data blobs plotted and colored by the centroid found by the algorithm, marked as stars.
+You can see an example result of this method by running `python demo.py --base` at the command line. The demo script can be found in the `src` directory. Running the demo script with the "base" flag will produce a `matplotlib` plot with two data blobs. The blobs are colored by the centroids that k-means discovered and marked as stars.
 
 <a name="np_accel">
 ### NumPy Accelerated
@@ -232,14 +231,14 @@ You can see an example result of this method by running `python demo.py --base` 
 
 The NumPy version of this algorithm is going to take advantage of broadcasting to speed things up. The broadcasting used is slightly more advanced than the example above, but each place it's used the intuition behind what's going on will be explained.
 
-As for the k-mean algorithm, the NumPy version still follows the outline laid out in the pseudocode above. Here it is again so you don't have to scroll back up.
+As for the k-means algorithm, the NumPy version still follows the outline laid out in the pseudocode above. Here it is again so you don't have to scroll back up.
 
 1. Initialize centroids. Aka, choose `k` centroids to start from.
 2. While stopping condition not met:
     1. Find closest centroid to each point.
     2. Move centroids to the average of all the points closest to them.
 
-Another benefit of broadcasting is that is going to lead to less code as we won't be writing out explicit for loops. With that in mind, here is the entirety of the k-means algorithm, this time assuming that, the data point, `X`, are in a NumPy array and taking advantage of that.
+Another benefit of broadcasting is that it leads to less code since we won't be writing out explicit for loops. With that in mind, here is the entirety of the k-means algorithm, this time assuming that, the data points, `X`, are in a NumPy array.
 
 ```python
 from scipy.spatial.distance import cdist
@@ -276,7 +275,7 @@ array([[ 1.41421356,  8.48528137],
        [ 7.07106781,  2.82842712]])
 ```
 
-The output of `cdist` shows that the first data point, the first row of the output, is 1.414 away from the first centroid and 8.485 away from the second. For the second, 4.243 and 5.657, respectively. Etc. Notice how easy it was to perform such a computation.
+The output of `cdist` shows that the first data point, the first row of the output, is 1.414 away from the first centroid and 8.485 away from the second. For the second, 4.243 and 5.657, respectively. Etc. Notice how easy it was to perform such a computation; no for loops, and we get another array back.
 
 Now that we know how to find the distance between every data point and the centroids, how do we find the closest centroid? This is what the [`.argmin`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmin.html#numpy.argmin) is doing above. What [`argmin`](https://docs.scipy.org/doc/numpy/reference/generated/numpy.argmin.html#numpy.argmin) (the NumPy function version of the method used) does by default is find the index of the minimum value in the given NumPy array. We can see as applied to the same `cdist` call from the code block above:
 
@@ -294,17 +293,17 @@ array([0, 0, 1])
 
 Now `argmin` is telling us that the smallest value in the first row is at index 0 in that row, index 0 in the second row, and index 1 in the third. We can verify this is the case by looking at the array above.
 
-From all of this we can see that `closest_centroid_idxs` is a NumPy array of indices, one for each of the data points, corresponding to its closest centroid.
+From all of this we can see that `closest_centroid_idxs` will hold a NumPy array of indices, one for each of the data points, corresponding to its closest centroid.
 
 #### Part 2.2 - Updating the Centroid Locations
 
 As we saw in the base Python solution, to update the centroid locations given the new centroid assignments we just take the mean, in each dimension, of all the points assigned to a centroid, for each centroid. The first part of this necessitates looping for the centroid indices, `for idx in range(k)`. Then, once we know what centroid, by index, we're updating we can go back to using NumPy's power.
 
-In the line `centroids[idx] = np.mean(X[closest_centroid_idxs == idx], axis=0)` we see broadcasting along with a feature of NumPy not yet mentioned. The `closest_centroid_idxs == idx` compares the NumPy array of centroid indices to the single centroid index the loop is on with the equality operator, `==`. If these centroid indices were stored in a Python list this expression would always evaluate to `False` since a number is never a list. However, here we're using a NumPy array, full of numbers, so what you do think happens when we use the equality operator? That's right, it gets broadcast! The implication is that we're having NumPy compare the single value of `idx` to each of the values in `closest_centroid_idxs` with `==`, this returns a NumPy array of bools.
+In the line `centroids[idx] = np.mean(X[closest_centroid_idxs == idx], axis=0)` we see broadcasting along with a feature of NumPy not yet mentioned. The `closest_centroid_idxs == idx` compares the NumPy array of centroid indices to the single centroid index the loop is on with the equality operator, `==`. If these centroid indices were stored in a Python list this expression would always evaluate to `False` since a number is never a list. However, here we're using a NumPy array, full of numbers, so what you do think happens when we use the equality operator? That's right, it gets broadcast! The implication is that we're having NumPy compare the single value of `idx` to each of the values in `closest_centroid_idxs` with `==`, this returns a NumPy array of booleans.
 
-The new feature of NumPy that hasn't been mentioned yet takes advantage of this boolean array. Through a process "boolean indexing" only the elements in `X` where `closest_centroid_idxs == idx` evaluated to `True` are returned. The upshot of this? For each centroid, we now have a concise way to access only the elements that are assigned to it, through it's index.
+The new feature of NumPy that hasn't been mentioned yet takes advantage of this boolean array. Through a process "boolean indexing" only the elements in `X` where `closest_centroid_idxs == idx` evaluated to `True` are returned, and they are returned as a new array. The upshot of this? For each centroid, we now have a concise way to access only the elements that are assigned to it, through it's index.
 
-The last part of the line uses NumPy's built in `mean` function to vectorize the computations involved in summing up all the values in each dimension for the data points picked up by the boolean indexing. How does it do it for every dimension? When we specify `axis=0` we're saying operate over the rows. Let's look at this in code.
+The last part of the line uses NumPy's built in `mean` function to vectorize the computations involved in summing up all the values in each dimension for the data points picked up by the boolean indexing. How does it find the mean in each dimension separately? When we specify `axis=0` we're saying operate over the rows. Let's look at this in code.
 
 ```python
 >>> X = np.array([[1, 2], [3, 4], [5, 6]])
@@ -324,7 +323,7 @@ And that's it! As with the base Python implementation you can run the demo scrip
 ### Comparison
 </a>
 
-Now it's time to inspect that promise made by the title of the repository. Check the performance of our two implementations. The demo script has this ability built in. In fact, if you don't pass any flags it will compare the base Python version with the NumPy version in a side by side plot. Both versions are timed while running and their run time is displayed in the title of each sub-plot. Thus, running `python demo.py` at the command line will produce a plot like the one below.
+It's high time to inspect that promise made by the title of the repository; to check and compare the performance of our two implementations. The demo script has this ability built in. In fact, if you don't pass any flags it will compare the base Python version with the NumPy version in a side by side plot by default. Both versions are timed while running and their run time is displayed in the title of each sub-plot. Thus, running `python demo.py` at the command line will produce a plot like the one below.
 
 <div style="text-align: center"><img src="images/comparision_100.png" style="width: 600px"></div>
 
@@ -338,8 +337,12 @@ Here we see that the runtime of the base Python version has grown linearly, 10 t
 
 <div style="text-align: center"><img src="images/comparision_10000.png" style="width: 600px"></div>
 
-<a name="postmortem">
-## Postmortem
+<a name="beginning">
+## Just the Beginning
 </a>
 
-**Talk about the high level intuition of why nuumpy sped things up for kmeans (c level speed by removing duck checks) and begin to talk about other optimization that we can get from numpy (linear algebra stuff, calling down to c and fortran, revisit numpy's self description**
+This tutorial covered some introductory level NumPy ideas, primarily arrays and broadcasting. We learned that we can get around some of the time penalties we pay for duck typing by using an array, which, by definition are homogeneous. In addition, the method that always for speedy processing of the data in these arrays is a process called broadcasting.
+
+The performance gain we get from broadcasting can be seen a deriving from the C loops that NumPy uses under the hood when broadcasting a computation. But we also get another type of gain from broadcasting, less code that's actually more explicit.
+
+I hope these topics serve as a window into NumPy's power, and as a feeble attempt to scratch the surface of SciPy's never ending awesomeness. This is to say that there's so much more that this scientific computing ecosystem, and in turn, Python has to offer.
