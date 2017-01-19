@@ -82,7 +82,7 @@ In fact, in many situations, like the add 2 one above, we won't even need to wri
 
 Broadcasting, also known as vectorization, provides a way to express operations over an entire array instead of having a manually loop over every individual element. Let's see this applied to our add 2 example in a picture then in code.
 
-<div style="text-align: center"><img src="images/broadcasting.png" style="width: 600px"></div>
+<div style="text-align: center"><img src="images/broadcasting.png" style="width: 200px"></div>
 
 All NumPy does when you try to add a single number to an array is infer that you want to add it to every individual element of the array. The really cool thing about this is that NumPy doesn't actually make an array full of 2s. Instead it actually performs the exact same loop we saw above, but it does it behind the scenes in C instead of Python.
 
