@@ -1,4 +1,4 @@
-# An Introduction to Performant Python
+# An Introduction to Numeric Computing in Python
 
 This repository aims to serve as a tutorial style introduction to discovering numeric performance optimizations in the Python programming language. It assumes only a cursory knowledge of Python and a tolerance for pinches of math. Requisite Python libraries to run the included code are: `scipy`, `numpy`, and `matplotlib`.
 
@@ -17,7 +17,7 @@ This repository aims to serve as a tutorial style introduction to discovering nu
 4. [Just the Beginning](#beginning)
 
 <a name="preamble">
-## Preamble
+<h2> Preamble </h2>
 </a>
 
 Python is well known to be an incredible learning language for beginning programmers on account of its readability, intuitive syntax, and wonderful community.
@@ -34,7 +34,7 @@ A short, but far from exhaustive, list of fantastic Python offerings to whet you
 It is through a specific library within the SciPy ecosystem that this tutorial will introduce programming performant Python. That library is [NumPy](http://www.numpy.org/).
 
 <a name="numpy">
-## NumPy 
+<h2> NumPy </h2>
 </a>
 
 NumPy's front page defines itself as the following:
@@ -50,7 +50,7 @@ These are amazing features indeed if we're looking for a library to add some per
 As this repository intends simply to introduce NumPy we will be focusing on the first two bullet points, N-dimensional arrays and broadcasting functions. We should, however, take a moment to talk about some of the intuitions for when and why we can expect performance gains from NumPy; part of this is closely tied to Python's limitations.
 
 <a name="duck_limits">
-### Duck Typing Limitations
+<h3> Duck Typing Limitations </h3>
 </a>
 
 So we have some intuition for one of the reasons using NumPy might give us faster code let's discuss type systems for a moment.
@@ -71,7 +71,7 @@ There is, however, a downside to duck typing. It incurs a time penalty; read: it
 While much of the slowness in the above "add 2 to all the elements of a list" example can be attributed to duck typing pitfalls, we can see another aspect of the situation as the limiting the nature of a Python list. Since Python lists are heterogeneous, this manual check for the ability to add a number to it's elements is actually necessary. Is there a different data structure, then, that could alleviate this pain point?
 
 <a name="broadcasting">
-### Broadcasting
+<h3> Broadcasting </h3>
 </a>
 
 NumPy is going to be our saving grace when it comes to escaping the time expensive processing of duck checking. As we saw above in NumPy's self description, it provides "a powerful N-dimensional array object". By definition, at least in the C programming language which is the language Python and NumPy are written in, an array is an ordered, and therefore, indexable group of variables of the same type. This sounds just like a Python list, until we get to the part about having the same type. Another way to put it is that arrays are homogeneous.
@@ -100,7 +100,7 @@ One final thing to note about broadcasting is that many of NumPy's functions, be
 Now let's look at an algorithm, k-means, to serve as a medium for observing a need for NumPy and then its power.
 
 <a name="kmeans">
-## k-means
+<h2> k-means </h2>
 </a>
 
 [k-means](https://en.wikipedia.org/wiki/K-means_clustering) is an unsupervised machine learning algorithm designed to discover clusters within a dataset. Consider the following, highly math-less description, of k-means; algorithm/math/English junkies, please forgive me.
@@ -114,7 +114,7 @@ The following image, hopefully in the more intuitive visual way, demonstrates wh
 **Note:** In practice these "blobs" exist in a space with many more than two dimensions. The above plot and the rest in this tutorial are presented in 2 dimensions solely as a device to gain intuition for what we're trying to accomplish with k-means.
 
 <a name="whyk">
-### Why k-means?
+<h3> Why k-means? </h3>
 </a>
 
 It's worth mentioning that k-means is a great algorithm to introduce numeric Python optimizations with since it is both fairly straightforward and has a visually demonstrable result. In addition, it's simplest implementation isn't overly complicated in either base Python or with NumPy.
@@ -122,7 +122,7 @@ It's worth mentioning that k-means is a great algorithm to introduce numeric Pyt
 In order to stay on the rails and keep chugging towards learning about injecting performance into Python and not detour deep into machine learning algorithms...ville, let's move on to pseudocode and then implementations of the k-means algorithm.
 
 <a name="pseudo">
-### Pseudocode
+<h3> Pseudocode </h3>
 </a>
 
 For some context of how k-mean finds the "center" of the "blobs" here's a rough pseudocode outline of the algorithm.
@@ -133,7 +133,7 @@ For some context of how k-mean finds the "center" of the "blobs" here's a rough 
     2. Move centroids to the average of all the points closest to them.
 
 <a name="implementations">
-### Implementations
+<h3> Implementations </h3>
 </a>
 
 **Note:** The code blocks throughout the remainder of this tutorial will not include doc strings to cut down on unnecessary space usage. Also, because code blocks will be accompanied by explanations. However, doc strings are important! As such, they are obviously included in the actual scripts which are located in the `src` directory.
@@ -141,7 +141,7 @@ For some context of how k-mean finds the "center" of the "blobs" here's a rough 
 First we're going to to look at a k-means implementation using only built-in Python functions and data structures.
 
 <a name="base_python">
-#### Base Python
+<h4> Base Python </h4>
 </a>
 
 This k-means implementation lives under the name `base_python` in the `kmeans.py` script in the `src` directory. At the top level, we see a code outline mirroring the pseudocode above. The `k` centroids are initialized to the first `k` data points, and the stopping condition is set to be a fixed number of iterations. **Note:** There are better ways to do both of these things, the method here was chosen to boil the algorithm to it's simplest form.
@@ -226,7 +226,7 @@ Given this, our for loop is looping over the dimensions of the data points, gett
 You can see an example result of this method by running `python demo.py --base` at the command line. The demo script can be found in the `src` directory. Running the demo script with the "base" flag will produce a `matplotlib` plot with two data blobs. The blobs are colored by the centroids that k-means discovered and marked as stars.
 
 <a name="np_accel">
-### NumPy Accelerated
+<h3> NumPy Accelerated </h3>
 </a>
 
 The NumPy version of this algorithm is going to take advantage of broadcasting to speed things up. The broadcasting used is slightly more advanced than the example above, but each place it's used the intuition behind what's going on will be explained.
@@ -320,7 +320,7 @@ Now we can see that this step changes the location of each centroid by calculati
 And that's it! As with the base Python implementation you can run the demo script with NumPy by running it with the "numpy" flag, e.g. `python demo.py --numpy` at the command line.
 
 <a name="comparison">
-### Comparison
+<h3> Comparison </h3>
 </a>
 
 It's high time to inspect that promise made by the title of the repository; to check and compare the performance of our two implementations. The demo script has this ability built in. In fact, if you don't pass any flags it will compare the base Python version with the NumPy version in a side by side plot by default. Both versions are timed while running and their run time is displayed in the title of each sub-plot. Thus, running `python demo.py` at the command line will produce a plot like the one below.
@@ -338,7 +338,7 @@ Here we see that the runtime of the base Python version has grown linearly, 10 t
 <div style="text-align: center"><img src="images/comparision_10000.png" style="width: 600px"></div>
 
 <a name="beginning">
-## Just the Beginning
+<h2> Just the Beginning </h2>
 </a>
 
 This tutorial covered some introductory level NumPy ideas, primarily arrays and broadcasting. We learned that we can get around some of the time penalties we pay for duck typing by using an array, which, by definition are homogeneous. In addition, the method that always for speedy processing of the data in these arrays is a process called broadcasting.
