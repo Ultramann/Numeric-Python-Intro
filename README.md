@@ -55,7 +55,7 @@ As this repository intends simply to introduce NumPy we will be focusing on the 
 
 So we have some intuition for one of the reasons using NumPy might give us faster code let's discuss type systems for a moment.
 
-Python is colloquially referred to a duck typed language, deriving from thr phrase now known as the duck test, "If it looks like a duck, swims like a duck, and quacks like a duck, then it probably is a duck." You might be wondering, how in the world is this saying applicable to programming, aka, what's all this quack about?
+Python is colloquially referred to a duck typed language, deriving from the phrase now known as the duck test, "If it looks like a duck, swims like a duck, and quacks like a duck, then it probably is a duck." You might be wondering, how in the world is this saying applicable to programming, aka, what's all this quack about?
 
 In Python, since it's an interpreted language, when you type the command `4 + 5` it doesn't __*know*__ what 4 and 5 are so it has to go check to see if you can add them together. As it turns out, you can, so Python will return `9` of type integer since that was the type of the two numbers we started with.
 
