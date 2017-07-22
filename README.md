@@ -305,13 +305,13 @@ It's high time to inspect that promise made by the title of the repository; to c
 
 <div style="text-align: center"><img src="images/comparision_100.png" style="width: 600px"></div>
 
-We can see that running the base Python version took about a third of a second, whereas the NumPy version finished in under a tenth of a second. **Note:** These times are for the 1000 updates on 100 data points that the script generates by default and on a MacBook Pro with a 2.7 GHz i5 processor.
+We can see that running the base Python version took about half of a second, whereas the NumPy version finished in a tenth of a second. **Note:** These times are for the 1000 updates on 100 data points that the script generates by default and on a 2013 MacBook Pro with a 2.6 GHz i5 processor.
 
-This difference of approximately a fifth of a second might not seem bad, but consider that this means the base version is about 5 times slower. Further, we need to remember that this example only uses 100 data points. The real power will become apparent when we scale to a more realistic number. To test this, we can use the demo script's "count" flag and pass it a number after. The plot below was produced with the command `python demo.py --count 1000`.
+This difference of approximately 0.4 seconds might not seem bad, but consider that this means the base version is about 5 times slower. Further, we need to remember that this example only uses 100 data points. The real power will become apparent when we scale to a more realistic number. To test this, we can use the demo script's "count" flag and pass it a number after. The plot below was produced with the command `python demo.py --count 1000`.
 
 <div style="text-align: center"><img src="images/comparision_1000.png" style="width: 600px"></div>
 
-Here we see that the runtime of the base Python version has grown linearly, 10 times more data points taking ten times as long, whereas the NumPy version is only taking approximately twice as long. In addition, at this point the NumPy version is running about 20 times faster than the base version. That's what I call a performance increase! Last example for dramatic purposes. 10000 points, which is finally getting closer to the size of data we might want to analyze. I'll let you be the judge.
+Here we see that the runtime of the base Python version has grown linearly, 10 times more data points taking ten times as long, whereas the NumPy version is only taking 50% longer. In addition, at this point the NumPy version is running about 20 times faster than the base version. That's what I call a performance increase! Last example for dramatic purposes. 10000 points, which is finally getting closer to the size of data we might want to analyze. I'll let you be the judge.
 
 <div style="text-align: center"><img src="images/comparision_10000.png" style="width: 600px"></div>
 

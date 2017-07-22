@@ -34,13 +34,12 @@ def plot_setup(centroids, assignments, ax, title=None, legend=False):
     title : str, to put on ax
     legend : bool, plot legend
     """
-    colors = ('b', 'g', 'r')
-    for centroid, assigns, color in zip(centroids, assignments, colors):
+    for centroid, assigns, color in zip(centroids, assignments, 'br'):
         size_alpha = 1 / (np.log2(len(assignments)) + 2)
         ax.scatter(*zip(*assigns), c=color, alpha=size_alpha, s=30, label='blob')
-        ax.scatter(*centroid, c=color, marker='*', s=300, label='center')
+        ax.scatter(*centroid, c='k', marker='*', alpha=0.7, s=300, label='center')
     if title:
-        ax.set_title(title)
+        ax.set_title(title, fontsize=15)
     if legend:
         plt.legend(loc='best')
 
@@ -78,12 +77,13 @@ if __name__ == '__main__':
 
     if not any([args.ex, args.base, args.numpy]):
         fig, ax_lst = plt.subplots(1, 2, figsize=(16, 8))
-        for ax, data, algo, km in zip(ax_lst, (X.tolist(), X), ('Base Python', 'NumPy'),
-                                                    (kmeans.base_python, kmeans.numpy)):
+        params = zip(ax_lst, (X.tolist(), X), ('Base Python', 'NumPy'),
+                                    (kmeans.base_python, kmeans.numpy))
+        for ax, data, algo, km in params:
             start_time = time()
             centroids, assignments = km(data, k=2)
             total_time = time() - start_time
             timed_title = '{}: {:.2f} seconds'.format(algo, total_time)
             plot_setup(centroids, assignments, ax, timed_title)
-        fig.suptitle('Timing: {} Data Points'.format(args.count), fontsize=25)
+        fig.suptitle('Timing - {} Data Points'.format(args.count), fontsize=25)
         plt.show()
