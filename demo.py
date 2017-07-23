@@ -44,6 +44,57 @@ def plot_setup(centroids, assignments, ax, title=None, legend=False):
         plt.legend(loc='best')
 
 
+def plot_single(X, km, label, legend=False):
+    """Cluster and plot results for single algorithm.
+
+    Parameters
+    ----------
+    X : list-like 2D
+    km : function, kmeans clustering function
+    label : str, for plot
+    legend : bool, plot legend
+    """
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    centroids, assignments = km(X, k=2)
+    plot_setup(centroids, assignments, ax, label, legend)
+    plt.show()
+
+
+def plot_timing_comp():
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    nums = [10, 100, 1000, 2500, 5000]
+    times = ([], [])
+    kms = (kmeans.base_python, kmeans.numpy)
+    for num_points in nums:
+        X = make_blobs(num_points)
+        for data, km, km_time in zip((X.tolist(), X), kms, times):
+            start_time = time()
+            km(data, k=2)
+            km_time.append(time() - start_time)
+
+    ax.plot(nums, times[0], c='r', label='Base')
+    ax.plot(nums, times[1], c='b', label='NumPy')
+    ax.set_xlabel('Number of Points to Cluster', fontsize=13)
+    ax.set_ylabel('Time to Cluster - Seconds', fontsize=13)
+    ax.legend(loc='best')
+    ax.set_title('Time Scaling for 1000 Iterations', fontsize=15)
+    plt.show()
+
+
+def plot_cluster_comp(X):
+    fig, ax_lst = plt.subplots(1, 2, figsize=(16, 8))
+    params = zip(ax_lst, (X.tolist(), X), ('Base Python', 'NumPy'),
+                                (kmeans.base_python, kmeans.numpy))
+    for ax, data, algo, km in params:
+        start_time = time()
+        centroids, assignments = km(data, k=2)
+        total_time = time() - start_time
+        timed_title = '{}: {:.2f} seconds'.format(algo, total_time)
+        plot_setup(centroids, assignments, ax, timed_title)
+    fig.suptitle('Timing - {} Data Points'.format(args.count), fontsize=25)
+    plt.show()
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run demo of numeric Python with k-means.')
     parser.add_argument('--count', default=100, type=int,
@@ -52,38 +103,25 @@ if __name__ == '__main__':
                         help='run with base python implementation')
     parser.add_argument('--numpy', action='store_true',
                         help='run with numpy implementation')
+    parser.add_argument('--comp', action='store_true',
+                        help='run to create time comparison plot')
     parser.add_argument('--ex', action='store_true',
                         help='run to create example plot')
     args = parser.parse_args()
 
+    if args.comp:
+        plot_timing_comp()
+            
     X = make_blobs(args.count)
+
     if args.ex:
-        fig, ax = plt.subplots(1, 1, figsize=(8, 8))
-        numpy_centroids, numpy_assignments = kmeans.numpy(X, k=2)
-        plot_setup(numpy_centroids, numpy_assignments, ax, 'Example k-means', True)
-        plt.show()
+        plot_single(X, kmeans.numpy, 'Example k-means', legend=True)
 
     if args.base:
-        fig, ax = plt.subplots(1, 1, figsize=(8, 8))
-        base_centroids, base_assignments = kmeans.base_python(X.tolist(), k=2)
-        plot_setup(base_centroids, base_assignments, ax, 'Base Python k-means')
-        plt.show()
+        plot_single(X, kmeans.base_python, 'Base Python k-means')
 
     if args.numpy:
-        fig, ax = plt.subplots(1, 1, figsize=(8, 8))
-        numpy_centroids, numpy_assignments = kmeans.numpy(X, k=2)
-        plot_setup(numpy_centroids, numpy_assignments, ax, 'NumPy k-means')
-        plt.show()
+        plot_single(X, kmeans.numpy, 'NumPy k-means')
 
-    if not any([args.ex, args.base, args.numpy]):
-        fig, ax_lst = plt.subplots(1, 2, figsize=(16, 8))
-        params = zip(ax_lst, (X.tolist(), X), ('Base Python', 'NumPy'),
-                                    (kmeans.base_python, kmeans.numpy))
-        for ax, data, algo, km in params:
-            start_time = time()
-            centroids, assignments = km(data, k=2)
-            total_time = time() - start_time
-            timed_title = '{}: {:.2f} seconds'.format(algo, total_time)
-            plot_setup(centroids, assignments, ax, timed_title)
-        fig.suptitle('Timing - {} Data Points'.format(args.count), fontsize=25)
-        plt.show()
+    if not any([args.comp, args.ex, args.base, args.numpy]):
+        plot_cluster_comp(X)
