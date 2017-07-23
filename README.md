@@ -2,7 +2,9 @@
 
 ## NumPy Demonstration with k-means Algorithm
 
-The code in this directory forms the basis of a introductory tutorial on the power of NumPy that I put on for the San Francisco Python Meetup Group. The discussion of the code and approach can be found in my [blog](ultramann.github.io).
+The code in this directory forms the basis of a introductory tutorial on numeric performance optimizations in the Python programming language that I put on for the San Francisco Python Meetup Group. The discussion of the code and approach can be found in my [blog](ultramann.github.io).
+
+Python libraries dependencies: `scipy`, `numpy`, and `matplotlib`.
 
 ## Notes
 
