@@ -41,7 +41,8 @@ def plot_setup(centroids, assignments, ax, title=None, legend=False):
     if title:
         ax.set_title(title, fontsize=15)
     if legend:
-        plt.legend(loc='best')
+        leg = plt.legend(loc=2)
+        leg.get_frame().set_alpha(0)
 
 
 def plot_single(X, km, label, legend=False):
@@ -56,7 +57,8 @@ def plot_single(X, km, label, legend=False):
     """
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
     centroids, assignments = km(X, k=2)
-    plot_setup(centroids, assignments, ax, label, legend)
+    plot_setup(centroids, assignments, ax, legend=legend)
+    fig.suptitle(label, fontsize=20)
     plt.show()
 
 
@@ -74,10 +76,11 @@ def plot_timing_comp():
 
     ax.plot(nums, times[0], c='r', label='Base')
     ax.plot(nums, times[1], c='b', label='NumPy')
-    ax.set_xlabel('Number of Points to Cluster', fontsize=13)
-    ax.set_ylabel('Time to Cluster - Seconds', fontsize=13)
-    ax.legend(loc='best')
-    ax.set_title('Time Scaling for 1000 Iterations', fontsize=15)
+    ax.set_xlabel('Number of Points to Cluster', fontsize=16)
+    ax.set_ylabel('Time to Cluster - Seconds', fontsize=16)
+    leg = ax.legend(loc='best')
+    leg.get_frame().set_alpha(0)
+    fig.suptitle('Time Scaling for 1000 Iterations', fontsize=20)
     plt.show()
 
 
@@ -91,7 +94,7 @@ def plot_cluster_comp(X):
         total_time = time() - start_time
         timed_title = '{}: {:.2f} seconds'.format(algo, total_time)
         plot_setup(centroids, assignments, ax, timed_title)
-    fig.suptitle('Timing - {} Data Points'.format(args.count), fontsize=25)
+    fig.suptitle('Timing - {} Data Points'.format(args.count), fontsize=20)
     plt.show()
 
 
