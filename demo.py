@@ -62,12 +62,38 @@ def plot_single(X, km, label, legend=False):
     plt.show()
 
 
-def plot_timing_comp():
+def plot_cluster_comp(X):
+    """Plots the results of both clustering implementations side-by-side
+    with the timing for the implementations above the clustering results.
+    
+    Parameters
+    ----------
+    X : list-like 2D
+    """
+    fig, ax_lst = plt.subplots(1, 2, figsize=(16, 8))
+    params = zip(ax_lst, (X.tolist(), X), ('Base Python', 'NumPy'),
+                                (kmeans.base_python, kmeans.numpy))
+    for ax, data, algo, km in params:
+        start_time = time()
+        centroids, assignments = km(data, k=2)
+        total_time = time() - start_time
+        timed_title = '{}: {:.2f} seconds'.format(algo, total_time)
+        plot_setup(centroids, assignments, ax, timed_title)
+    fig.suptitle('Timing - {} Data Points'.format(args.count), fontsize=20)
+    plt.show()
+
+
+def plot_timing_comp(data_sizes=(10, 100, 1000, 2500, 5000)):
+    """Plots the time taken to cluster on given data over some data sizes.
+    
+    Parameters
+    ----------
+    data_sizes : tuple, ints
+    """
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
-    nums = [10, 100, 1000, 2500, 5000]
     times = ([], [])
     kms = (kmeans.base_python, kmeans.numpy)
-    for num_points in nums:
+    for num_points in data_sizes:
         X = make_blobs(num_points)
         for data, km, km_time in zip((X.tolist(), X), kms, times):
             start_time = time()
@@ -81,20 +107,6 @@ def plot_timing_comp():
     leg = ax.legend(loc='best')
     leg.get_frame().set_alpha(0)
     fig.suptitle('Time Scaling for 1000 Iterations', fontsize=20)
-    plt.show()
-
-
-def plot_cluster_comp(X):
-    fig, ax_lst = plt.subplots(1, 2, figsize=(16, 8))
-    params = zip(ax_lst, (X.tolist(), X), ('Base Python', 'NumPy'),
-                                (kmeans.base_python, kmeans.numpy))
-    for ax, data, algo, km in params:
-        start_time = time()
-        centroids, assignments = km(data, k=2)
-        total_time = time() - start_time
-        timed_title = '{}: {:.2f} seconds'.format(algo, total_time)
-        plot_setup(centroids, assignments, ax, timed_title)
-    fig.suptitle('Timing - {} Data Points'.format(args.count), fontsize=20)
     plt.show()
 
 
