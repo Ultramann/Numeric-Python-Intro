@@ -55,7 +55,7 @@ def plot_single(X, km, label, legend=False):
     label : str, for plot
     legend : bool, plot legend
     """
-    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(8, 8))
     centroids, assignments = km(X, k=2)
     plot_setup(centroids, assignments, ax, legend=legend)
     fig.suptitle(label, fontsize=20)
@@ -70,8 +70,8 @@ def plot_cluster_comp(X):
     ----------
     X : list-like 2D
     """
-    fig, ax_lst = plt.subplots(1, 2, figsize=(16, 8))
-    params = zip(ax_lst, (X.tolist(), X), ('Base Python', 'NumPy'),
+    fig, axs = plt.subplots(1, 2, figsize=(16, 8))
+    params = zip(axs, (X.tolist(), X), ('Base Python', 'NumPy'),
                                 (kmeans.base_python, kmeans.numpy))
     for ax, data, algo, km in params:
         start_time = time()
@@ -90,7 +90,7 @@ def plot_timing_comp(data_sizes=(10, 100, 1000, 2500, 5000)):
     ----------
     data_sizes : tuple, ints
     """
-    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    fig, ax = plt.subplots(figsize=(8, 8))
     times = ([], [])
     kms = (kmeans.base_python, kmeans.numpy)
     for num_points in data_sizes:
@@ -100,12 +100,11 @@ def plot_timing_comp(data_sizes=(10, 100, 1000, 2500, 5000)):
             km(data, k=2)
             km_time.append(time() - start_time)
 
-    ax.plot(nums, times[0], c='r', label='Base')
-    ax.plot(nums, times[1], c='b', label='NumPy')
+    ax.plot(data_sizes, times[0], c='r', label='Base')
+    ax.plot(data_sizes, times[1], c='b', label='NumPy')
     ax.set_xlabel('Number of Points to Cluster', fontsize=16)
     ax.set_ylabel('Time to Cluster - Seconds', fontsize=16)
     leg = ax.legend(loc='best')
-    leg.get_frame().set_alpha(0)
     fig.suptitle('Time Scaling for 1000 Iterations', fontsize=20)
     plt.show()
 
