@@ -41,24 +41,23 @@ def plot_setup(centroids, assignments, ax, title=None, legend=False):
     if title:
         ax.set_title(title, fontsize=15)
     if legend:
-        leg = plt.legend(loc=2)
-        leg.get_frame().set_alpha(0)
+        plt.legend(loc=2)
 
 
-def plot_single(X, km, label, legend=False):
+def plot_single(X, km, title, legend=False):
     """Cluster and plot results for single algorithm.
 
     Parameters
     ----------
     X : list-like 2D
     km : function, kmeans clustering function
-    label : str, for plot
+    title : str, for plot
     legend : bool, plot legend
     """
     fig, ax = plt.subplots(figsize=(8, 8))
     centroids, assignments = km(X, k=2)
     plot_setup(centroids, assignments, ax, legend=legend)
-    fig.suptitle(label, fontsize=20)
+    fig.suptitle(title, fontsize=20)
     plt.show()
 
 
@@ -79,7 +78,7 @@ def plot_cluster_comp(X):
         total_time = time() - start_time
         timed_title = '{}: {:.2f} seconds'.format(algo, total_time)
         plot_setup(centroids, assignments, ax, timed_title)
-    fig.suptitle('Timing - {} Data Points'.format(args.count), fontsize=20)
+    fig.suptitle('Timing - {} Data Points'.format(X.shape[0]), fontsize=20)
     plt.show()
 
 
@@ -104,7 +103,7 @@ def plot_timing_comp(data_sizes=(10, 100, 1000, 2500, 5000)):
     ax.plot(data_sizes, times[1], c='b', label='NumPy')
     ax.set_xlabel('Number of Points to Cluster', fontsize=16)
     ax.set_ylabel('Time to Cluster - Seconds', fontsize=16)
-    leg = ax.legend(loc='best')
+    ax.legend(loc='best')
     fig.suptitle('Time Scaling for 1000 Iterations', fontsize=20)
     plt.show()
 
