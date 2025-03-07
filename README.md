@@ -97,7 +97,7 @@ Now let's look at an algorithm, k-means, to serve as a medium for observing a ne
 
 The following image, hopefully in the more intuitive visual way, demonstrates what is meant by "centers" and "blobs".
 
-<div class="mpl"><img class="single" src="/images/numeric_python_intro/example_clustering.png"></div>
+![Example Clustering](/assets/example_clustering.png)
 
 **Note:** In practice these "blobs" exist in a space with many more than two dimensions. The above plot and the rest in this tutorial are presented in 2 dimensions solely as a device to gain intuition for what we're trying to accomplish with k-means.
 
@@ -301,21 +301,21 @@ And that's it! As with the base Python implementation you can run the demo scrip
 
 It's high time to inspect that promise made by the title of the repository; to check and compare the performance of our two implementations. The demo script has this ability built in. In fact, if you don't pass any flags it will compare the base Python version with the NumPy version in a side by side plot by default. Both versions are timed while running and their run time is displayed in the title of each sub-plot. Thus, running `python demo.py` at the command line will produce a plot like the one below.
 
-<div class="mpl"><img class="double" src="/images/numeric_python_intro/comparison_100.png"></div>
+![100 Data Points Comparison](/assets/comparison_100.png)
 
 We can see that running the base Python version took about a third of a second, whereas the NumPy version finished in under a tenth of a second. **Note:** These times are for the 1000 updates on 100 data points that the script generates by default on an Intel Xeon 2.40GHz processor.
 
 This difference of approximately 0.3 seconds might not seem bad, but consider that this means the base version is about 5 times slower. Further, we need to remember that this example only uses 100 data points. The real power will become apparent when we scale to a more realistic number. To test this, we can use the demo script's "count" flag and pass it a number after. The plot below was produced with the command `python demo.py --count 1000`.
 
-<div class="mpl"><img class="double" src="/images/numeric_python_intro/comparison_1000.png"></div>
+![1000 Data Points Comparison](/assets/comparison_1000.png)
 
 Here we see that the runtime of the base Python version has grown linearly, 10 times more data points taking ten times as long, whereas the NumPy version is only taking 50% longer. In addition, at this point the NumPy version is running about 25 times faster than the base version. That's what I call a performance difference! Last example for dramatic purposes. 10000 points, which is finally getting closer to the size of data we might want to analyze. I'll let you be the judge.
 
-<div class="mpl"><img class="double" src="/images/numeric_python_intro/comparison_10000.png"></div>
+![10,000 Data Points Comparison](/assets/comparison_10000.png)
 
 For the final comparison of NumPy vs base Python implementations, below we can see how long it takes each version of the algorithm to go through 1000 iterations of k-means clustering updates on progressively larger data sets. You can see that while the run time of the base Python version is linear, the NumPy version grows in what appears to be sub-log time.
 
-<div class="mpl"><img class="single" src="/images/numeric_python_intro/kmeans_time_comp.png"></div>
+![Time Comparison](/assets/kmeans_time_comp.png)
 
 # Conclusion
 
